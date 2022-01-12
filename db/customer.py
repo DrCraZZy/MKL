@@ -26,7 +26,7 @@ customer_order = Table(
     metadata,
     Column("ID", Integer, primary_key=True, unique=True, autoincrement=True, ),
     Column("INN_KPP_CUSTOMER", String, ForeignKey("customer_data.INN_KPP")),
-    Column("PHYSICAL_PROPERTIES", String),
+    Column("PHYSICAL_PROPERTIES", Integer, ForeignKey("references.ID")),
     Column("WEIGHT", Integer),
     Column("DIMENSION", Float),
     Column("LOADING_TYPE", String),  # possible in ref table
