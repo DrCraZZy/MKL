@@ -41,8 +41,8 @@ transporter_vehicles = Table(
     Column("UPDATED_AT", DateTime, default=datetime.utcnow)
 )
 
-transporter_contract = Table(
-    "transporter_contract",
+transporter_contracts = Table(
+    "transporter_contracts",
     metadata,
     Column("CONTRACT_NUMBER", String, primary_key=True, unique=True),
     Column("INN_KPP_TRANSPORTER", String, ForeignKey("transporter_data.INN_KPP")),

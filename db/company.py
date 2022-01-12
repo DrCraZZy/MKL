@@ -20,8 +20,8 @@ company_data = Table(
     Column("UPDATED_AT", DateTime, default=datetime.utcnow)
 )
 
-company_contract = Table(
-    "transporter_contract",
+company_contracts = Table(
+    "transporter_contracts",
     metadata,
     Column("CONTRACT_NUMBER", String, primary_key=True, unique=True),
     Column("ORDER_ID", String, ForeignKey("customer_orders.ID")),
