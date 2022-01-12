@@ -1,5 +1,4 @@
-from starlette.config import Config
+import os
 
-config = Config(".env_dev")
+DATABASE_NAME = 'sqlite:///Test.sqlite'  # os.getenv('MKL_DATABASE_URI')
 
-DATABASE_URL = config("EE_DATABASE_URL", cast=str, default="connection string is empty")
