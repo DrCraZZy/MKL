@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, String, DateTime, Integer, ForeignKey, Float
+from sqlalchemy import Table, Column, String, DateTime, Integer, ForeignKey, Float, Boolean
 from .database import metadata
 import datetime
 
@@ -24,7 +24,7 @@ customer_data = Table(
 customer_order = Table(
     "customer_orders",
     metadata,
-    Column("ID", Integer, primary_key=True, unique=True, autoincrement=True, nullable=False ),
+    Column("ID", Integer, primary_key=True, unique=True, autoincrement=True, nullable=False),
     Column("INN_KPP_CUSTOMER", String, ForeignKey("customer_data.INN_KPP"), nullable=False),
     Column("PHYSICAL_PROPERTIES", Integer, ForeignKey("references.ID"), nullable=False),
     Column("WEIGHT", Integer),
@@ -36,6 +36,7 @@ customer_order = Table(
     Column("DELIVERY_COORDINATE", String),
     Column("DISTANCE_KM", Integer, nullable=False),
     Column("PRICE", Integer, nullable=False),
+    Column("IS_ACTIVE", Boolean, default=True),
     Column("CREATED_AT", DateTime, default=datetime.datetime.utcnow),
     Column("UPDATED_AT", DateTime, default=datetime.datetime.utcnow)
 )

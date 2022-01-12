@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, String, DateTime, Integer, ForeignKey, Float
+from sqlalchemy import Table, Column, String, DateTime, Integer, ForeignKey, Float, Boolean
 from datetime import datetime
 
 from .database import metadata
@@ -37,6 +37,7 @@ transporter_vehicles = Table(
     Column("COST_UP_TO_100km", Float),
     Column("COST_UP_TO_500km", Float),
     Column("COST_UP_TO_1000km", Float),
+    Column("IS_AVAILABLE", Boolean, default=True),
     Column("CREATED_AT", DateTime, default=datetime.utcnow),
     Column("UPDATED_AT", DateTime, default=datetime.utcnow)
 )
