@@ -16,7 +16,7 @@ customer_data = Table(
     Column("EMAIL", String, unique=True),
     Column("TELEPHONE", String),
     Column("PAYMENT_ACCOUNT", String),
-    Column("Corporate Account", String),
+    Column("CORPORATE_ACCOUNT", String),
     Column("CREATED_AT", DateTime, default=datetime.datetime.utcnow),
     Column("UPDATED_AT", DateTime, default=datetime.datetime.utcnow)
 )
