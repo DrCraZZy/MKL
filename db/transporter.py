@@ -30,7 +30,7 @@ transporter_vehicles = Table(
     Column("MODEL", String),
     Column("DRY_WEIGHT", Integer),
     Column("MAX_WEIGHT", Integer),
-    Column("PHYSICAL_PROPERTIES", Integer, ForeignKey("references.ID")),
+    Column("PHYSICAL_PROPERTIES", Integer, ForeignKey("physical_properties.ID")),
     Column("WEIGHT", Integer),
     Column("DIMENSION", Float),
     Column("LOADING_TYPE", String),  # possible in ref table
