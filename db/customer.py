@@ -6,17 +6,17 @@ import datetime
 customer_data = Table(
     "customer_data",
     metadata,
-    Column("INN_KPP", String, primary_key=True, unique=True),
-    Column("OGRN", String, unique=True),
-    Column("NAME", String),
+    Column("INN_KPP", String, primary_key=True, unique=True, nullable=False),
+    Column("OGRN", String, unique=True, nullable=False),
+    Column("NAME", String, nullable=False),
     Column("DATE_OF_FORMATION", DateTime),
     Column("DIRECTOR", String),
-    Column("LEGAL_ADDRESS", String),
-    Column("ADDRESS", String),
-    Column("EMAIL", String, unique=True),
+    Column("LEGAL_ADDRESS", String, nullable=False),
+    Column("ADDRESS", String, nullable=False),
+    Column("EMAIL", String, unique=True, nullable=False),
     Column("TELEPHONE", String),
-    Column("PAYMENT_ACCOUNT", String),
-    Column("CORPORATE_ACCOUNT", String),
+    Column("PAYMENT_ACCOUNT", String, nullable=False),
+    Column("CORPORATE_ACCOUNT", String, nullable=False),
     Column("CREATED_AT", DateTime, default=datetime.datetime.utcnow),
     Column("UPDATED_AT", DateTime, default=datetime.datetime.utcnow)
 )
@@ -24,18 +24,18 @@ customer_data = Table(
 customer_order = Table(
     "customer_orders",
     metadata,
-    Column("ID", Integer, primary_key=True, unique=True, autoincrement=True, ),
-    Column("INN_KPP_CUSTOMER", String, ForeignKey("customer_data.INN_KPP")),
-    Column("PHYSICAL_PROPERTIES", Integer, ForeignKey("references.ID")),
+    Column("ID", Integer, primary_key=True, unique=True, autoincrement=True, nullable=False ),
+    Column("INN_KPP_CUSTOMER", String, ForeignKey("customer_data.INN_KPP"), nullable=False),
+    Column("PHYSICAL_PROPERTIES", Integer, ForeignKey("references.ID"), nullable=False),
     Column("WEIGHT", Integer),
     Column("DIMENSION", Float),
     Column("LOADING_TYPE", String),  # possible in ref table
-    Column("LOADING_ADDRESS", String),
+    Column("LOADING_ADDRESS", String, nullable=False),
     Column("LOADING_COORDINATE", String),
-    Column("DELIVERY_ADDRESS", String),
+    Column("DELIVERY_ADDRESS", String, nullable=False),
     Column("DELIVERY_COORDINATE", String),
-    Column("DISTANCE_KM", Integer),
-    Column("PRICE", Integer),
+    Column("DISTANCE_KM", Integer, nullable=False),
+    Column("PRICE", Integer, nullable=False),
     Column("CREATED_AT", DateTime, default=datetime.datetime.utcnow),
     Column("UPDATED_AT", DateTime, default=datetime.datetime.utcnow)
 )
@@ -43,11 +43,11 @@ customer_order = Table(
 customer_contract = Table(
     "customer_contract",
     metadata,
-    Column("CONTRACT_NUMBER", String, primary_key=True, unique=True),
-    Column("INN_KPP_CUSTOMER", String, ForeignKey("customer_data.INN_KPP")),
-    Column("CUSTOMER_ORDER_ID", Integer, ForeignKey("customer_orders.ID")),
-    Column("START_DATE", DateTime),     # what does it mean
-    Column("END_DATE", DateTime),       # what does it mean
+    Column("CONTRACT_NUMBER", String, primary_key=True, unique=True, nullable=False),
+    Column("INN_KPP_CUSTOMER", String, ForeignKey("customer_data.INN_KPP"), nullable=False),
+    Column("CUSTOMER_ORDER_ID", Integer, ForeignKey("customer_orders.ID"), nullable=False),
+    Column("START_DATE", DateTime, nullable=False),     # what does it mean
+    Column("END_DATE", DateTime, nullable=False),       # what does it mean
     Column("CREATED_AT", DateTime, default=datetime.datetime.utcnow),
     Column("UPDATED_AT", DateTime, default=datetime.datetime.utcnow)
 )
@@ -55,14 +55,14 @@ customer_contract = Table(
 customer_contact = Table(
     "customer_contacts",
     metadata,
-    Column("ID", Integer, primary_key=True, unique=True, autoincrement=True),
-    Column("INN_KPP_CUSTOMER", String, ForeignKey("customer_data.INN_KPP")),
-    Column("NAME", String),
-    Column("SURNAME", String),
+    Column("ID", Integer, primary_key=True, unique=True, autoincrement=True, nullable=False),
+    Column("INN_KPP_CUSTOMER", String, ForeignKey("customer_data.INN_KPP"), nullable=False),
+    Column("NAME", String, nullable=False),
+    Column("SURNAME", String, nullable=False),
     Column("PATRONYMIC", String),
     Column("POSITION", String),
     Column("TELEPHONE", String),
-    Column("EMAIL", String),
+    Column("EMAIL", String, nullable=False),
     Column("CREATED_AT", DateTime, default=datetime.datetime.utcnow),
     Column("UPDATED_AT", DateTime, default=datetime.datetime.utcnow)
 )

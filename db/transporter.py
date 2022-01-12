@@ -6,9 +6,9 @@ from .database import metadata
 transporter_data = Table(
     "transporter_data",
     metadata,
-    Column("INN_KPP", String, primary_key=True, unique=True),
-    Column("OGRN", String, unique=True),
-    Column("NAME", String),
+    Column("INN_KPP", String, primary_key=True, unique=True, nullable=False),
+    Column("OGRN", String, unique=True, nullable=False),
+    Column("NAME", String, nullable=False),
     Column("DATE_OF_FORMATION", DateTime),
     Column("DIRECTOR", String),
     Column("LEGAL_ADDRESS", String),
