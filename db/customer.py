@@ -29,7 +29,7 @@ customer_order = Table(
     Column("PHYSICAL_PROPERTIES", Integer, ForeignKey("physical_properties.ID")),
     Column("WEIGHT", Integer),
     Column("DIMENSION", Float),
-    Column("LOADING_TYPE", Integer, ForeignKey("loading_type.id")),
+    Column("LOADING_TYPE", Integer, ForeignKey("loading_type.ID")),
     Column("LOADING_ADDRESS", String, nullable=False),
     Column("LOADING_COORDINATE", String),
     Column("DELIVERY_ADDRESS", String, nullable=False),
