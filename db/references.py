@@ -8,3 +8,11 @@ physical_properties = Table(
     Column("PHYSICAL_PROPERTIES", String),
     Column("Description", String)
 )
+
+loading_type = Table(
+    "loading_type",
+    metadata,
+    Column("ID", Integer, primary_key=True, unique=True, autoincrement=True),
+    Column("LOADING_TYPE", String),
+    Column("Description", String)
+)
