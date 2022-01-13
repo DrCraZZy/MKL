@@ -1,3 +1,3 @@
-# import os
+import os
 
-DATABASE_NAME = 'sqlite:///Test.sqlite'  # os.getenv('MKL_DATABASE_URI')
+DATABASE_NAME = os.getenv('MKL_DATABASE_URI')  # 'sqlite:///Test.sqlite'
