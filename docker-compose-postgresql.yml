@@ -10,7 +10,7 @@ version: '3'
 services:
   # The name of our service is "database"
   # but you can use the name of your choice.
-  # Note: This may change the commands you are going to use a little bit.
+  # Note: This may change the commands you are going to use a little.
   database:
     # Official Postgres image from DockerHub (we use the last version)
     image: 'postgres:latest'
