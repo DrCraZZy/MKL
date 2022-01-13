@@ -29,7 +29,7 @@ customer_order = Table(
     Column("PHYSICAL_PROPERTIES", Integer, ForeignKey("physical_properties.ID")),
     Column("WEIGHT", Integer),
     Column("DIMENSION", Float),
-    Column("LOADING_TYPE", String),  # possible in ref table
+    Column("LOADING_TYPE", Integer, ForeignKey("loading_type.id")),
     Column("LOADING_ADDRESS", String, nullable=False),
     Column("LOADING_COORDINATE", String),
     Column("DELIVERY_ADDRESS", String, nullable=False),
@@ -47,8 +47,8 @@ customer_contract = Table(
     Column("CONTRACT_NUMBER", String, primary_key=True, unique=True, nullable=False),
     Column("INN_KPP_CUSTOMER", String, ForeignKey("customer_data.INN_KPP"), nullable=False),
     Column("CUSTOMER_ORDER_ID", Integer, ForeignKey("customer_orders.ID"), nullable=False),
-    Column("START_DATE", DateTime, nullable=False),     # what does it mean
-    Column("END_DATE", DateTime, nullable=False),       # what does it mean
+    Column("START_DATE", DateTime, nullable=False),
+    Column("END_DATE", DateTime, nullable=False),
     Column("CREATED_AT", DateTime, default=datetime.datetime.utcnow),
     Column("UPDATED_AT", DateTime, default=datetime.datetime.utcnow)
 )
