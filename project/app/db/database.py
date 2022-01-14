@@ -4,7 +4,7 @@ from core.config import DATABASE_NAME
 
 engine = create_engine(DATABASE_NAME)
 metadata = MetaData()
-database = Database()
+database = Database(DATABASE_NAME)
 
 
 def create_db():
