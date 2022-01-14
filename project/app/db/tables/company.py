@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import Table, Column, String, DateTime, Integer, ForeignKey
-from database import metadata
+from project.app.db.database  import metadata
 
 company_data = Table(
     "company_data",

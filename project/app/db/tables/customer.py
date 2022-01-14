@@ -1,5 +1,5 @@
 from sqlalchemy import Table, Column, String, DateTime, Integer, ForeignKey, Float, Boolean
-from .database import metadata
+from project.app.db.database import metadata
 import datetime
 
 

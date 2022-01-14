@@ -1,6 +1,6 @@
 from sqlalchemy import Table, Column, ForeignKey, Integer, Boolean, DateTime
 from datetime import datetime
-from .database import metadata
+from project.app.db.database import metadata
 
 
 deals = Table(

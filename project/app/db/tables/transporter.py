@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, String, DateTime, Integer, ForeignKey, Float, Boolean
 from datetime import datetime
 
-from .database import metadata
+from project.app.db.database import metadata
 
 transporter_data = Table(
     "transporter_data",
