@@ -1,11 +1,14 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from .depends import get_customer_repository
+from project.app.models.customer import CustomerIn, CustomerOut
+from project.app.repositories.customers import CustomerRepository
 
 router = APIRouter()
 
-@router.get("/") # , response_model=list[Customer]
-async def read_users():
-    # users: CustomerRepository = Depends(get_user_repository),
-    # limit: int = 100,
-    # skip: int = 0):
-    # return await users.get_all(limit=limit, skip=0)
-    return {"Hello":"World"}
+
+@router.post("/", response_model=CustomerOut)
+async def create_customer(
+        customer: CustomerIn,
+        customers: CustomerRepository = Depends(get_customer_repository)):
+    return await customers.create_customer(c=customer)
