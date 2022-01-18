@@ -1,12 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
 
-from db.database import create_db, database
+from project.app.db.database import database
+from project.app.db import db_create  # crete all tables
 from project.app.endpoints import customer
-
-
-def main():
-    create_db()
 
 
 app = FastAPI(title="MKL")
@@ -28,5 +25,4 @@ async def shutdown():
 
 
 if __name__ == '__main__':
-    main()
     uvicorn.run("main:app", reload=True)
