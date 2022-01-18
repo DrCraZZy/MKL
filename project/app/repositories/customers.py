@@ -28,7 +28,7 @@ class CustomerRepository(BaseRepository):
                 detail=message
             )
 
-        logger.info(f"New customer with inn:'{customer.inn_kpp}' was created")
+        logger.info(f"New customer with inn:'{customer.inn_kpp}' was created.")
         return customer
 
     @logger.catch
@@ -92,5 +92,5 @@ class CustomerRepository(BaseRepository):
         query = customer_data.update().where(customer_data.c.inn_kpp == customer_inn).values(**values)
         await self.database.execute(query)
 
-        logger.info(f"Customer with inn:'{customer_inn}' was updated")
+        logger.info(f"Customer with inn:'{customer_inn}' was updated.")
         return updated_customer
