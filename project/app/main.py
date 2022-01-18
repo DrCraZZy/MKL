@@ -7,7 +7,7 @@ from project.app.endpoints import customer
 
 
 app = FastAPI(title="MKL")
-app.include_router(customer.router, prefix="/customers", tags=["customer"])
+app.include_router(customer.router, prefix="/customers", tags=["Customers"])
 
 
 # app.include_router(auth.router, prefix="/auth", tags=["auth"])
