@@ -94,3 +94,11 @@ class CustomerRepository(BaseRepository):
 
         logger.info(f"Customer with inn:'{customer_inn}' was updated.")
         return updated_customer
+
+    @logger.catch
+    async def delete_customer_by_inn(self, customer_inn: str) -> dict:
+        query = customer_data.delete().where(customer_data.c.inn_kpp == customer_inn)
+        await self.database.execute(query)
+
+        logger.info(f"Customer with inn:'{customer_inn}' was deleted.")
+        return {"message": f"Customer with inn:'{customer_inn}' was deleted."}
