@@ -6,71 +6,71 @@ from project.app.db.database import metadata
 transporter_data = Table(
     "transporter_data",
     metadata,
-    Column("INN_KPP", String, primary_key=True, unique=True, nullable=False),
-    Column("OGRN", String, unique=True, nullable=False),
-    Column("NAME", String, nullable=False),
-    Column("DATE_OF_FORMATION", DateTime),
-    Column("DIRECTOR", String),
-    Column("LEGAL_ADDRESS", String),
-    Column("ADDRESS", String),
-    Column("EMAIL", String, unique=True),
-    Column("TELEPHONE", String),
-    Column("PAYMENT_ACCOUNT", String),
-    Column("CORPORATE_ACCOUNT", String),
-    Column("CREATED_AT", DateTime, default=datetime.utcnow),
-    Column("UPDATED_AT", DateTime, default=datetime.utcnow)
+    Column("inn_kpp", String, primary_key=True, unique=True, nullable=False),
+    Column("ogrn", String, unique=True, nullable=False),
+    Column("name", String, nullable=False),
+    Column("date_of_formation", DateTime),
+    Column("director", String),
+    Column("legal_address", String),
+    Column("address", String),
+    Column("email", String, unique=True),
+    Column("telephone", String),
+    Column("payment_account", String),
+    Column("corporate_account", String),
+    Column("created_at", DateTime, default=datetime.utcnow),
+    Column("updated_at", DateTime, default=datetime.utcnow)
 )
 
 transporter_vehicles = Table(
     "transporter_vehicles",
     metadata,
-    Column("ID", Integer, primary_key=True, unique=True, autoincrement=True),
-    Column("INN_KPP_TRANSPORTER", String, ForeignKey("transporter_data.INN_KPP")),
-    Column("BRAND", String),
-    Column("MODEL", String),
-    Column("DRY_WEIGHT", Integer),
-    Column("MAX_WEIGHT", Integer),
-    Column("PHYSICAL_PROPERTIES", Integer, ForeignKey("physical_properties.ID")),
-    Column("WEIGHT", Integer),
-    Column("DIMENSION", Float),
-    Column("LOADING_TYPE", String),  # possible in ref table
-    Column("COST_UP_TO_100km", Float),
-    Column("COST_UP_TO_500km", Float),
-    Column("COST_UP_TO_1000km", Float),
-    Column("IS_AVAILABLE", Boolean, default=True),
-    Column("CREATED_AT", DateTime, default=datetime.utcnow),
-    Column("UPDATED_AT", DateTime, default=datetime.utcnow)
+    Column("id", Integer, primary_key=True, unique=True, autoincrement=True),
+    Column("inn_kpp_transporter", String, ForeignKey("transporter_data.inn_kpp")),
+    Column("brand", String),
+    Column("model", String),
+    Column("dry_weight", Integer),
+    Column("max_weight", Integer),
+    Column("physical_properties", Integer, ForeignKey("physical_properties.id")),
+    Column("weight", Integer),
+    Column("dimension", Float),
+    Column("loading_type", String),  # possible in ref table
+    Column("cost_up_to_100km", Float),
+    Column("cost_up_to_500km", Float),
+    Column("cost_up_to_1000km", Float),
+    Column("is_available", Boolean, default=True),
+    Column("created_at", DateTime, default=datetime.utcnow),
+    Column("updated_at", DateTime, default=datetime.utcnow)
 )
 
 transporter_contracts = Table(
     "transporter_contracts",
     metadata,
-    Column("CONTRACT_NUMBER", String, primary_key=True, unique=True),
-    Column("INN_KPP_TRANSPORTER", String, ForeignKey("transporter_data.INN_KPP")),
-    Column("TRANSPORTER_VEHICLE_ID", Integer, ForeignKey("transporter_vehicles.ID")),
-    Column("START_DATE", DateTime),  # what does it mean
-    Column("END_DATE", DateTime),  # what does it mean
-    Column("LOADING_TIME", DateTime),
-    Column("LOADING_ADDRESS", String),
-    Column("LOADING_COORDINATE", String),
-    Column("DELIVERY_ADDRESS", String),
-    Column("DELIVERY_COORDINATE", String),
-    Column("DISTANCE_KM", Integer),
-    Column("CREATED_AT", DateTime, default=datetime.utcnow),
-    Column("UPDATED_AT", DateTime, default=datetime.utcnow)
+    Column("contract_number", String, primary_key=True, unique=True),
+    Column("inn_kpp_transporter", String, ForeignKey("transporter_data.inn_kpp")),
+    Column("transporter_vehicle_id", Integer, ForeignKey("transporter_vehicles.id")),
+    Column("start_date", DateTime),  # what does it mean
+    Column("end_date", DateTime),  # what does it mean
+    Column("loading_time", DateTime),
+    Column("loading_address", String),
+    Column("loading_coordinate", String),
+    Column("delivery_address", String),
+    Column("delivery_coordinate", String),
+    Column("distance_km", Integer),
+    Column("created_at", DateTime, default=datetime.utcnow),
+    Column("updated_at", DateTime, default=datetime.utcnow)
 )
 
 transporter_contact = Table(
     "transporter_contact",
     metadata,
-    Column("ID", Integer, primary_key=True, unique=True, autoincrement=True),
-    Column("INN_KPP_TRANSPORTER", String, ForeignKey("transporter_data.INN_KPP")),
-    Column("NAME", String),
-    Column("SURNAME", String),
-    Column("PATRONYMIC", String),
-    Column("POSITION", String),
-    Column("TELEPHONE", String),
-    Column("EMAIL", String),
-    Column("CREATED_AT", DateTime, default=datetime.utcnow),
-    Column("UPDATED_AT", DateTime, default=datetime.utcnow)
+    Column("id", Integer, primary_key=True, unique=True, autoincrement=True),
+    Column("inn_kpp_transporter", String, ForeignKey("transporter_data.inn_kpp")),
+    Column("name", String),
+    Column("surname", String),
+    Column("patronymic", String),
+    Column("position", String),
+    Column("telephone", String),
+    Column("email", String),
+    Column("created_at", DateTime, default=datetime.utcnow),
+    Column("updated_at", DateTime, default=datetime.utcnow)
 )
