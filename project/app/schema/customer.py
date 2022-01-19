@@ -15,5 +15,5 @@ class CustomerSchema(BaseModel):
     telephone: str | None
     payment_account: str
     corporate_account: str
-    created_at: datetime = datetime.utcnow()
-    updated_at: datetime = datetime.utcnow()
+    created_at: datetime
+    updated_at: datetime

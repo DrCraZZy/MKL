@@ -22,23 +22,23 @@ customer_data = Table(
 )
 
 customer_order = Table(
-    "customer_orders",
+    "customer_order",
     metadata,
-    Column("id", Integer, primary_key=True, unique=True, autoincrement=True, nullable=False),
+    Column("id", Integer, primary_key=True, unique=True, autoincrement=True),
     Column("inn_kpp_customer", String, ForeignKey("customer_data.inn_kpp"), nullable=False),
-    Column("physical_properties", Integer, ForeignKey("physical_properties.id")),
+    Column("physical_properties", Integer, ForeignKey("physical_properties.id"), nullable=False),
     Column("weight", Integer),
     Column("dimension", Float),
-    Column("loading_type", Integer, ForeignKey("loading_type.id")),
+    Column("loading_type", Integer, ForeignKey("loading_type.id"), nullable=False),
     Column("loading_address", String, nullable=False),
     Column("loading_coordinate", String),
     Column("delivery_address", String, nullable=False),
     Column("delivery_coordinate", String),
     Column("distance_km", Integer, nullable=False),
-    Column("price", Integer, nullable=False),
+    Column("price", Float, nullable=False),
     Column("is_active", Boolean, default=True),
     Column("created_at", DateTime, default=datetime.datetime.utcnow),
-    Column("UPDATED_AT", DateTime, default=datetime.datetime.utcnow)
+    Column("updated_at", DateTime, default=datetime.datetime.utcnow)
 )
 
 customer_contract = Table(
@@ -54,7 +54,7 @@ customer_contract = Table(
 )
 
 customer_contact = Table(
-    "customer_contacts",
+    "customer_contact",
     metadata,
     Column("id", Integer, primary_key=True, unique=True, autoincrement=True, nullable=False),
     Column("inn_kpp_customer", String, ForeignKey("customer_data.inn_kpp"), nullable=False),
