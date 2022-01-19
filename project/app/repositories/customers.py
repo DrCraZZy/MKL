@@ -5,7 +5,7 @@ from datetime import datetime
 from project.app.repositories.base_repository import BaseRepository
 from project.app.schema.customer import CustomerSchema
 from project.app.db.tables.customer import customer_data
-from project.app.core.log import logger
+from project.app.helper.log import logger
 
 
 class CustomerRepository(BaseRepository):
@@ -21,7 +21,7 @@ class CustomerRepository(BaseRepository):
         data_set = await self.database.execute(query)
 
         if not data_set:
-            message: str = "Customer can't be inserted. Please try is again."
+            message: str = "Customer can't be inserted. Please try it again."
             logger.error(message)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
