@@ -45,7 +45,7 @@ async def update_customer_by_inn(
     return await customers.update_customer_by_inn(customer_inn=customer_inn, customer=customer)
 
 
-@router.delete("/{customer_inn}", response_model=dict,  status_code=status.HTTP_202_ACCEPTED)
+@router.delete("/{customer_inn}", response_model=dict, status_code=status.HTTP_202_ACCEPTED)
 async def delete_customer_by_inn(
         customer_inn: str,
         customers: CustomerRepository = Depends(get_customer_repository)):
