@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import and_
 
 from project.app.repositories.base_repository import BaseRepository
-from project.app.schema.customer_order import CustomerOrderSchema, CustomerOrderOutSchema, CustomerOrderInSchema
+from project.app.schema.customer_order import CustomerOrderOutSchema, CustomerOrderInSchema
 from project.app.db.tables.customer import customer_order
 from project.app.helper.log import logger
 
@@ -14,7 +14,7 @@ class CustomerOrderRepository(BaseRepository):
     @logger.catch
     async def create_customer_order(self, order: CustomerOrderInSchema) -> CustomerOrderOutSchema:
         query = customer_order.insert().values(
-            inn_kpp_customer=order.inn_kpp_customer,
+            inn_customer=order.inn_customer,
             physical_properties=order.physical_properties,
             weight=order.weight,
             dimension=order.dimension,
@@ -41,7 +41,7 @@ class CustomerOrderRepository(BaseRepository):
                 detail=message
             )
 
-        logger.info(f"New order with id:'{new_id}' for customer with inn:'{order.inn_kpp_customer}' was created.")
+        logger.info(f"New order with id:'{new_id}' for customer with inn:'{order.inn_customer}' was created.")
 
         return CustomerOrderOutSchema.parse_obj(new_order)
 
@@ -56,8 +56,8 @@ class CustomerOrderRepository(BaseRepository):
         return customer_list_object
 
     @logger.catch
-    async def get_customer_orders(self, customer_inn: str, limit: int = 100, skip: int = 0) -> List[
-        CustomerOrderOutSchema]:
+    async def get_customer_orders(self, customer_inn: str, limit: int = 100, skip: int = 0) -> \
+            List[CustomerOrderOutSchema]:
         query = \
             customer_order. \
                 select(). \
@@ -88,7 +88,7 @@ class CustomerOrderRepository(BaseRepository):
         query = customer_order.update().where(
             and_(customer_order.c.inn_kpp_customer == customer_inn, customer_order.c.id == order_id)). \
             values(
-            inn_kpp_customer=customer_inn,
+            inn_customer=customer_inn,
             physical_properties=order.physical_properties,
             weight=order.weight,
             dimension=order.dimension,

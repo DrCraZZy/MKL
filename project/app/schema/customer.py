@@ -4,7 +4,8 @@ from datetime import datetime, date
 
 # Base customer information
 class CustomerSchema(BaseModel):
-    inn_kpp: str
+    inn: str
+    kpp: str
     ogrn: str
     name: str
     date_of_formation: date | None

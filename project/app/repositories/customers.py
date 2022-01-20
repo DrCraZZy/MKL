@@ -3,7 +3,7 @@ from fastapi import HTTPException, status
 from datetime import datetime
 
 from project.app.repositories.base_repository import BaseRepository
-from project.app.schema.customer import CustomerSchema
+from project.app.schema.customer import CustomerSchema, CustomerOutSchema
 from project.app.db.tables.customer import customer_data
 from project.app.helper.log import logger
 
@@ -11,16 +11,30 @@ from project.app.helper.log import logger
 class CustomerRepository(BaseRepository):
 
     @logger.catch
-    async def create_customer(self, customer: CustomerSchema) -> CustomerSchema:
-        values = {**customer.dict()}
-        query = customer_data.insert().values(**values)
+    async def create_customer(self, customer: CustomerSchema) -> CustomerOutSchema:
+        query = customer_data.insert().values(
+            inn=customer.inn,
+            kpp=customer.kpp,
+            ogrn=customer.ogrn,
+            name=customer.name,
+            date_of_formation=customer.date_of_formation,
+            director=customer.director,
+            legal_address=customer.legal_address,
+            address=customer.address,
+            email=customer.email,
+            telephone=customer.telephone,
+            payment_account=customer.payment_account,
+            corporate_account=customer.corporate_account,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
         await self.database.execute(query)
 
         # check for data insertion, is data with new inn_kpp in the table
-        query = customer_data.select().where(customer_data.c.inn_kpp == customer.inn_kpp)
-        data_set = await self.database.execute(query)
+        query = customer_data.select().where(customer_data.c.inn == customer.inn)
+        new_customer = await self.database.fetch_one(query)
 
-        if not data_set:
+        if not new_customer:
             message: str = "Customer can't be inserted. Please try it again."
             logger.error(message)
             raise HTTPException(
@@ -28,8 +42,8 @@ class CustomerRepository(BaseRepository):
                 detail=message
             )
 
-        logger.info(f"New customer with inn:'{customer.inn_kpp}' was created.")
-        return customer
+        logger.info(f"New customer with inn:'{customer.inn}' was created.")
+        return CustomerOutSchema.parse_obj(new_customer)
 
     @logger.catch
     async def get_all_customers(self, limit: int = 100, skip: int = 0) -> List[CustomerSchema]:
@@ -43,7 +57,7 @@ class CustomerRepository(BaseRepository):
 
     @logger.catch
     async def get_customer_by_inn(self, customer_inn: str) -> CustomerSchema | None:
-        query = customer_data.select().where(customer_data.c.inn_kpp == customer_inn).first()
+        query = customer_data.select().where(customer_data.c.inn_kpp == customer_inn)
         customer = await self.database.fetch_one(query=query)
 
         if customer:
@@ -72,7 +86,8 @@ class CustomerRepository(BaseRepository):
     @logger.catch
     async def update_customer_by_inn(self, customer_inn: str, customer: CustomerSchema) -> CustomerSchema:
         updated_customer = CustomerSchema(
-            inn_kpp=customer_inn,
+            inn=customer_inn,
+            kpp=customer.kpp,
             ogrn=customer.ogrn,
             name=customer.name,
             date_of_formation=customer.date_of_formation,

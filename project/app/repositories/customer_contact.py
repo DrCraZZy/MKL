@@ -31,7 +31,7 @@ class CustomerContactRepository(BaseRepository):
     @logger.catch
     async def create_customer_contact(self, contact: CustomerContactInSchema) -> CustomerContactOutSchema:
         query = customer_contact.insert().values(
-            inn_kpp_customer=contact.inn_kpp_customer,
+            inn_customer=contact.inn_customer,
             name=contact.name,
             surname=contact.surname,
             patronymic=contact.patronymic,
@@ -67,7 +67,7 @@ class CustomerContactRepository(BaseRepository):
             update(). \
             where(and_(customer_contact.c.id == contact_id, customer_contact.c.inn_kpp_customer == customer_inn)). \
             values(
-                inn_kpp_customer=contact.inn_kpp_customer,
+                inn_customer=contact.inn_customer,
                 name=contact.name,
                 surname=contact.surname,
                 patronymic=contact.patronymic,

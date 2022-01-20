@@ -17,7 +17,7 @@ class CustomerOrderUpdateSchema(BaseModel):
 
 
 class CustomerOrderInSchema(CustomerOrderUpdateSchema):
-    inn_kpp_customer: str
+    inn_customer: str
 
 
 class CustomerOrderSchema(CustomerOrderInSchema):

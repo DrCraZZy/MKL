@@ -3,7 +3,7 @@ from datetime import datetime, date
 
 
 class CustomerContactInSchema(BaseModel):
-    inn_kpp_customer: str
+    inn_customer: str
     name: str
     surname: str
     patronymic: str | None
