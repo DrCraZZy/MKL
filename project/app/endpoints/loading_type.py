@@ -16,7 +16,7 @@ async def create_loading_type(
 
 
 @router.get("/", response_model=List[LoadingTypeOutSchema], status_code=status.HTTP_200_OK)
-async def create_loading_type(ltr: LoadingTypeRepository = Depends(get_loading_type_repository)):
+async def get_loading_type(ltr: LoadingTypeRepository = Depends(get_loading_type_repository)):
     return await ltr.get_loading_types()
 
 

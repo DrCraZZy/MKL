@@ -13,7 +13,7 @@ class CustomerContactRepository(BaseRepository):
 
     @logger.catch
     async def get_customer_contacts_by_inn(self, customer_inn: str) -> List[CustomerContactOutSchema]:
-        query = customer_contact.select().where(customer_contact.c.inn_kpp_customer == customer_inn)
+        query = customer_contact.select().where(customer_contact.c.inn_customer == customer_inn)
         contact_list = await self.database.fetch_all(query)
 
         if not contact_list:
@@ -43,9 +43,9 @@ class CustomerContactRepository(BaseRepository):
         )
         new_id = await self.database.execute(query)
         query = customer_contact.select().where(customer_contact.c.id == new_id)
-        new_order = await self.database.fetch_one(query)
+        new_contact = await self.database.fetch_one(query)
 
-        if not new_order:
+        if not new_contact:
             message: str = "Contact can't be inserted. Please try it again."
             logger.error(message)
             raise HTTPException(
@@ -53,9 +53,9 @@ class CustomerContactRepository(BaseRepository):
                 detail=message
             )
 
-        logger.info(f"New contact with id:'{new_id}' for customer with inn:'{contact.inn_kpp_customer}' was created.")
+        logger.info(f"New contact with id:'{new_id}' for customer with inn:'{contact.inn_customer}' was created.")
 
-        return CustomerContactOutSchema.parse_obj(new_order)
+        return CustomerContactOutSchema.parse_obj(new_contact)
 
     @logger.catch
     async def update_contact(
@@ -65,7 +65,7 @@ class CustomerContactRepository(BaseRepository):
             contact: CustomerContactInSchema) -> CustomerContactOutSchema:
         query = customer_contact. \
             update(). \
-            where(and_(customer_contact.c.id == contact_id, customer_contact.c.inn_kpp_customer == customer_inn)). \
+            where(and_(customer_contact.c.id == contact_id, customer_contact.c.inn_customer == customer_inn)). \
             values(
                 inn_customer=contact.inn_customer,
                 name=contact.name,
@@ -81,7 +81,7 @@ class CustomerContactRepository(BaseRepository):
 
         query = customer_contact.select().where(
             and_(
-                customer_contact.c.inn_kpp_customer == customer_inn,
+                customer_contact.c.inn_customer == customer_inn,
                 customer_contact.c.id == contact_id)
         )
         updated_contact = await self.database.fetch_one(query)

@@ -61,7 +61,7 @@ class CustomerOrderRepository(BaseRepository):
         query = \
             customer_order. \
                 select(). \
-                where(customer_order.c.inn_kpp_customer == customer_inn). \
+                where(customer_order.c.inn_customer == customer_inn). \
                 limit(limit). \
                 offset(skip)
         order_list = await self.database.fetch_all(query=query)
@@ -86,7 +86,7 @@ class CustomerOrderRepository(BaseRepository):
                                         customer_inn: str,
                                         order: CustomerOrderInSchema) -> CustomerOrderOutSchema:
         query = customer_order.update().where(
-            and_(customer_order.c.inn_kpp_customer == customer_inn, customer_order.c.id == order_id)). \
+            and_(customer_order.c.inn_customer == customer_inn, customer_order.c.id == order_id)). \
             values(
             inn_customer=customer_inn,
             physical_properties=order.physical_properties,
@@ -106,7 +106,7 @@ class CustomerOrderRepository(BaseRepository):
 
         query = customer_order.select().where(
             and_(
-                customer_order.c.inn_kpp_customer == customer_inn,
+                customer_order.c.inn_customer == customer_inn,
                 customer_order.c.id == order_id)
         )
         updated_order = await self.database.fetch_one(query)

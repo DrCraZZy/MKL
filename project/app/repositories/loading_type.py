@@ -28,9 +28,9 @@ class LoadingTypeRepository(BaseRepository):
 
         new_id = await self.database.execute(query)
         query = loading_type.select().where(loading_type.c.id == new_id)
-        new_order = await self.database.fetch_one(query)
+        new_item = await self.database.fetch_one(query)
 
-        if not new_order:
+        if not new_item:
             message: str = "Loading type can't be inserted. Please try it again."
             logger.error(message)
             raise HTTPException(
@@ -40,7 +40,7 @@ class LoadingTypeRepository(BaseRepository):
 
         logger.info(f"New loading type with id:'{new_id}' was created.")
 
-        return LoadingTypeOutSchema.parse_obj(new_order)
+        return LoadingTypeOutSchema.parse_obj(new_item)
 
     @logger.catch
     async def update_loading_type(

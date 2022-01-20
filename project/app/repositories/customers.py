@@ -30,7 +30,7 @@ class CustomerRepository(BaseRepository):
         )
         await self.database.execute(query)
 
-        # check for data insertion, is data with new inn_kpp in the table
+        # check for data insertion, is data with new inn in the table
         query = customer_data.select().where(customer_data.c.inn == customer.inn)
         new_customer = await self.database.fetch_one(query)
 
@@ -57,7 +57,7 @@ class CustomerRepository(BaseRepository):
 
     @logger.catch
     async def get_customer_by_inn(self, customer_inn: str) -> CustomerSchema | None:
-        query = customer_data.select().where(customer_data.c.inn_kpp == customer_inn)
+        query = customer_data.select().where(customer_data.c.inn == customer_inn)
         customer = await self.database.fetch_one(query=query)
 
         if customer:
@@ -103,8 +103,8 @@ class CustomerRepository(BaseRepository):
 
         values = {**updated_customer.dict()}
         values.pop("created_at")
-        values.pop("inn_kpp")
-        query = customer_data.update().where(customer_data.c.inn_kpp == customer_inn).values(**values)
+        values.pop("inn")
+        query = customer_data.update().where(customer_data.c.inn == customer_inn).values(**values)
         await self.database.execute(query)
 
         logger.info(f"Customer with inn:'{customer_inn}' was updated.")
@@ -112,7 +112,7 @@ class CustomerRepository(BaseRepository):
 
     @logger.catch
     async def delete_customer_by_inn(self, customer_inn: str) -> dict:
-        query = customer_data.delete().where(customer_data.c.inn_kpp == customer_inn)
+        query = customer_data.delete().where(customer_data.c.inn == customer_inn)
         await self.database.execute(query)
 
         logger.info(f"Customer with inn:'{customer_inn}' was deleted.")
