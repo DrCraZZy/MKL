@@ -32,7 +32,7 @@ async def get_customer_orders_by_inn(
     return await orders.get_customer_orders(customer_inn=customer_inn, limit=limit, skip=skip)
 
 
-@router.put("/{order_id}/customer/{customer_inn}", response_model=CustomerOrderOutSchema, status_code=status.HTTP_201_CREATED)
+@router.put("/", response_model=CustomerOrderOutSchema, status_code=status.HTTP_201_CREATED)
 async def update_order(
         order_id: int,
         customer_inn: str,
