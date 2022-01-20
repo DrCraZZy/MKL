@@ -2,7 +2,7 @@
 
 ### Löschkonzept
 - ein Flag für gelöscht in "alle" Tabellen anlegen
-- Für jede Tabelle soll eine \[tabellen_name\]_archieve - Tabelle angelegt werden
+- (✔) Für jede Tabelle soll eine \[tabellen_name\]_archive - Tabelle angelegt werden 
 - Prozedur für das übertragen, der Datensätze mit Flag "gelöscht" in die Archeivetabellen 
 
 # Backend TODOs
