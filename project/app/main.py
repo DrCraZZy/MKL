@@ -3,14 +3,13 @@ from fastapi import FastAPI
 
 from project.app.db.database import database
 from project.app.db import db_create  # crete all tables
-from project.app.endpoints import customer, customer_order
+from project.app.endpoints import customer, customer_order, customer_contact
 
 
 app = FastAPI(title="MKL")
 app.include_router(customer.router, prefix="/customers", tags=["Customers"])
 app.include_router(customer_order.router, prefix="/orders", tags=["Customer Orders"])
-
-# app.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
+app.include_router(customer_contact.router, prefix="/customer_contact", tags=["Customer contact"])
 
 
 @app.on_event("startup")
