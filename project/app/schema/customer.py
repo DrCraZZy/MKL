@@ -15,5 +15,8 @@ class CustomerSchema(BaseModel):
     telephone: str | None
     payment_account: str
     corporate_account: str
+
+
+class CustomerOutSchema(CustomerSchema):
     created_at: datetime
     updated_at: datetime
