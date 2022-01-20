@@ -5,7 +5,7 @@ physical_property = Table(
     "physical_property",
     metadata,
     Column("id", Integer, primary_key=True, unique=True, autoincrement=True),
-    Column("physical_properties", String),
+    Column("physical_property", String),
     Column("description", String)
 )
 
