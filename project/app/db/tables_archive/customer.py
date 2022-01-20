@@ -2,8 +2,8 @@ from sqlalchemy import Table, Column, String, Date, DateTime, Integer, Float, Bo
 from project.app.db.database import metadata
 
 
-customer_data_arc = Table(
-    "customer_data_arc",
+arc_customer_data = Table(
+    "arc_customer_data",
     metadata,
     Column("inn", String),
     Column("kpp", String),
@@ -16,13 +16,13 @@ customer_data_arc = Table(
     Column("email", String),
     Column("telephone", String),
     Column("payment_account", String),
-    Column("corporate_account"),
+    Column("corporate_account", String),
     Column("created_at", DateTime),
     Column("updated_at", DateTime)
 )
 
-customer_order_arc = Table(
-    "customer_order_arc",
+arc_customer_order = Table(
+    "arc_customer_order",
     metadata,
     Column("id", Integer),
     Column("inn_customer", String),
@@ -41,8 +41,8 @@ customer_order_arc = Table(
     Column("updated_at", DateTime)
 )
 
-customer_contract_arc = Table(
-    "customer_contract_arc",
+arc_customer_contract = Table(
+    "arc_customer_contract",
     metadata,
     Column("contract_number", String),
     Column("inn_customer", String),
@@ -53,8 +53,8 @@ customer_contract_arc = Table(
     Column("updated_at", DateTime)
 )
 
-customer_contact_arc = Table(
-    "customer_contact_arc",
+arc_customer_contact = Table(
+    "arc_customer_contact",
     metadata,
     Column("id", Integer),
     Column("inn_customer", String),

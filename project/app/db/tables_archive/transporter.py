@@ -1,8 +1,8 @@
-from sqlalchemy import Table, Column, String, DateTime, Date, Integer
-from project.app.db.database  import metadata
+from sqlalchemy import Table, Column, String, DateTime, Date, Integer, Float, Boolean
+from project.app.db.database import metadata
 
-company_data_arc = Table(
-    "company_data_arc",
+arc_transporter_data = Table(
+    "arc_transporter_data",
     metadata,
     Column("inn", String),
     Column("kpp", String),
@@ -20,11 +20,32 @@ company_data_arc = Table(
     Column("updated_at", DateTime)
 )
 
-company_contract_arc = Table(
-    "transporter_contract_arc",
+arc_transporter_vehicle = Table(
+    "arc_transporter_vehicle",
+    metadata,
+    Column("id", Integer),
+    Column("inn_transporter", String),
+    Column("brand", String),
+    Column("model", String),
+    Column("dry_weight", Integer),
+    Column("max_weight", Integer),
+    Column("physical_property", Integer),
+    Column("weight", Integer),
+    Column("dimension", Float),
+    Column("loading_type", Integer),
+    Column("cost_up_to_100km", Float),
+    Column("cost_up_to_500km", Float),
+    Column("cost_up_to_1000km", Float),
+    Column("is_available", Boolean),
+    Column("created_at", DateTime),
+    Column("updated_at", DateTime)
+)
+
+arc_transporter_contract = Table(
+    "arc_transporter_contract",
     metadata,
     Column("contract_number", String),
-    Column("order_id", String),
+    Column("inn_transporter", String),
     Column("transporter_vehicle_id", Integer),
     Column("start_date", DateTime),
     Column("end_date", DateTime),
@@ -33,16 +54,16 @@ company_contract_arc = Table(
     Column("loading_coordinate", String),
     Column("delivery_address", String),
     Column("delivery_coordinate", String),
-    Column("DISTANCE_KM", Integer),
-    Column("CREATED_AT", DateTime),
-    Column("UPDATED_AT", DateTime)
+    Column("distance_km", Integer),
+    Column("created_at", DateTime),
+    Column("updated_at", DateTime)
 )
 
-company_contact_arc = Table(
-    "customer_contact_arc",
+arc_transporter_contact = Table(
+    "arc_transporter_contact",
     metadata,
     Column("id", Integer),
-    Column("inn_company", String,),
+    Column("inn_transporter", String),
     Column("name", String),
     Column("surname", String),
     Column("patronymic", String),

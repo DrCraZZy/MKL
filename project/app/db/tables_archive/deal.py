@@ -2,8 +2,8 @@ from sqlalchemy import Table, Column, String, Integer, Boolean, DateTime
 from project.app.db.database import metadata
 
 
-deal_arc = Table(
-    "deal_arc",
+arc_deal = Table(
+    "arc_deal",
     metadata,
     Column("id", Integer),
     Column("transporter_vehicle_id", Integer),
