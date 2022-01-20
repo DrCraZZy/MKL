@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, String, DateTime, Integer, ForeignKey, Float, Boolean
+from sqlalchemy import Table, Column, String, Date, DateTime, Integer, ForeignKey, Float, Boolean
 from project.app.db.database import metadata
 import datetime
 
@@ -6,14 +6,15 @@ import datetime
 customer_data = Table(
     "customer_data",
     metadata,
-    Column("inn_kpp", String, primary_key=True, unique=True, nullable=False),
+    Column("inn", String, primary_key=True, unique=True, nullable=False),
+    Column("kpp", String, unique=True, nullable=False),
     Column("ogrn", String, unique=True, nullable=False),
     Column("name", String, nullable=False),
-    Column("date_of_formation", DateTime),
+    Column("date_of_formation", Date),
     Column("director", String),
     Column("legal_address", String, nullable=False),
     Column("address", String, nullable=False),
-    Column("email", String, unique=True, nullable=False),
+    Column("email", String, nullable=False),
     Column("telephone", String),
     Column("payment_account", String, nullable=False),
     Column("corporate_account", String, nullable=False),
@@ -25,8 +26,8 @@ customer_order = Table(
     "customer_order",
     metadata,
     Column("id", Integer, primary_key=True, unique=True, autoincrement=True),
-    Column("inn_kpp_customer", String, ForeignKey("customer_data.inn_kpp"), nullable=False),
-    Column("physical_properties", Integer, ForeignKey("physical_properties.id"), nullable=False),
+    Column("inn_customer", String, ForeignKey("customer_data.inn"), nullable=False),
+    Column("physical_property", Integer, ForeignKey("physical_property.id"), nullable=False),
     Column("weight", Integer),
     Column("dimension", Float),
     Column("loading_type", Integer, ForeignKey("loading_type.id"), nullable=False),
@@ -45,8 +46,8 @@ customer_contract = Table(
     "customer_contract",
     metadata,
     Column("contract_number", String, primary_key=True, unique=True, nullable=False),
-    Column("inn_kpp_customer", String, ForeignKey("customer_data.inn_kpp"), nullable=False),
-    Column("customer_order_id", Integer, ForeignKey("customer_orders.id"), nullable=False),
+    Column("inn_customer", String, ForeignKey("customer_data.inn"), nullable=False),
+    Column("customer_order_id", Integer, ForeignKey("customer_order.id"), nullable=False),
     Column("start_date", DateTime, nullable=False),
     Column("end_date", DateTime, nullable=False),
     Column("created_at", DateTime, default=datetime.datetime.utcnow),
@@ -57,7 +58,7 @@ customer_contact = Table(
     "customer_contact",
     metadata,
     Column("id", Integer, primary_key=True, unique=True, autoincrement=True, nullable=False),
-    Column("inn_kpp_customer", String, ForeignKey("customer_data.inn_kpp"), nullable=False),
+    Column("inn_customer", String, ForeignKey("customer_data.inn"), nullable=False),
     Column("name", String, nullable=False),
     Column("surname", String, nullable=False),
     Column("patronymic", String),

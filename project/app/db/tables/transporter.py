@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, String, DateTime, Integer, ForeignKey, Float, Boolean
+from sqlalchemy import Table, Column, String, DateTime, Date, Integer, ForeignKey, Float, Boolean
 from datetime import datetime
 
 from project.app.db.database import metadata
@@ -6,10 +6,11 @@ from project.app.db.database import metadata
 transporter_data = Table(
     "transporter_data",
     metadata,
-    Column("inn_kpp", String, primary_key=True, unique=True, nullable=False),
+    Column("inn", String, primary_key=True, unique=True, nullable=False),
+    Column("kpp", String, unique=True, nullable=False),
     Column("ogrn", String, unique=True, nullable=False),
     Column("name", String, nullable=False),
-    Column("date_of_formation", DateTime),
+    Column("date_of_formation", Date),
     Column("director", String),
     Column("legal_address", String),
     Column("address", String),
@@ -21,19 +22,19 @@ transporter_data = Table(
     Column("updated_at", DateTime, default=datetime.utcnow)
 )
 
-transporter_vehicles = Table(
-    "transporter_vehicles",
+transporter_vehicle = Table(
+    "transporter_vehicle",
     metadata,
     Column("id", Integer, primary_key=True, unique=True, autoincrement=True),
-    Column("inn_kpp_transporter", String, ForeignKey("transporter_data.inn_kpp")),
+    Column("inn_transporter", String, ForeignKey("transporter_data.inn")),
     Column("brand", String),
     Column("model", String),
     Column("dry_weight", Integer),
     Column("max_weight", Integer),
-    Column("physical_properties", Integer, ForeignKey("physical_properties.id")),
+    Column("physical_property", Integer, ForeignKey("physical_property.id")),
     Column("weight", Integer),
     Column("dimension", Float),
-    Column("loading_type", String),  # possible in ref table
+    Column("loading_type", Integer, ForeignKey("loading_type.id")),
     Column("cost_up_to_100km", Float),
     Column("cost_up_to_500km", Float),
     Column("cost_up_to_1000km", Float),
@@ -42,12 +43,12 @@ transporter_vehicles = Table(
     Column("updated_at", DateTime, default=datetime.utcnow)
 )
 
-transporter_contracts = Table(
-    "transporter_contracts",
+transporter_contract = Table(
+    "transporter_contract",
     metadata,
     Column("contract_number", String, primary_key=True, unique=True),
-    Column("inn_kpp_transporter", String, ForeignKey("transporter_data.inn_kpp")),
-    Column("transporter_vehicle_id", Integer, ForeignKey("transporter_vehicles.id")),
+    Column("inn_transporter", String, ForeignKey("transporter_data.inn")),
+    Column("transporter_vehicle_id", Integer, ForeignKey("transporter_vehicle.id")),
     Column("start_date", DateTime),  # what does it mean
     Column("end_date", DateTime),  # what does it mean
     Column("loading_time", DateTime),
@@ -64,7 +65,7 @@ transporter_contact = Table(
     "transporter_contact",
     metadata,
     Column("id", Integer, primary_key=True, unique=True, autoincrement=True),
-    Column("inn_kpp_transporter", String, ForeignKey("transporter_data.inn_kpp")),
+    Column("inn_transporter", String, ForeignKey("transporter_data.inn")),
     Column("name", String),
     Column("surname", String),
     Column("patronymic", String),
