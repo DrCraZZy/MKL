@@ -6,8 +6,8 @@ from project.app.db import db_create  # crete all tables
 from project.app.endpoints import customer, customer_order, customer_contact, loading_type, physical_property
 
 app = FastAPI(title="MKL")
-app.include_router(customer.router, prefix="/customers", tags=["Customers"])
-app.include_router(customer_order.router, prefix="/orders", tags=["Customer Orders"])
+app.include_router(customer.router, prefix="/customers", tags=["Customer"])
+app.include_router(customer_order.router, prefix="/orders", tags=["Customer Order"])
 app.include_router(customer_contact.router, prefix="/customer_contact", tags=["Customer contact"])
 app.include_router(loading_type.router, prefix="/loading_type", tags=["Loading type"])
 app.include_router(physical_property.router, prefix="/physical_property", tags=["Physical property"])

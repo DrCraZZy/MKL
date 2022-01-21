@@ -1,4 +1,4 @@
-from project.app.repositories.customers import CustomerRepository
+from project.app.repositories.customer import CustomerRepository
 from project.app.repositories.customer_order import CustomerOrderRepository
 from project.app.repositories.customer_contact import CustomerContactRepository
 from project.app.repositories.loading_type import LoadingTypeRepository

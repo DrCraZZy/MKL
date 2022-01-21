@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, status
 
 from .depends import get_customer_repository
 from project.app.schema.customer import CustomerSchema
-from project.app.repositories.customers import CustomerRepository
+from project.app.repositories.customer import CustomerRepository
 
 router = APIRouter()
 
