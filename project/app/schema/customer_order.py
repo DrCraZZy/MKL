@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class CustomerOrderUpdateSchema(BaseModel):
-    physical_properties: int | None
+    physical_property: int | None
     weight: int | None
     dimension: float | None
     loading_type: int | None

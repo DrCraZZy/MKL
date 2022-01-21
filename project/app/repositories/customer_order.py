@@ -15,7 +15,7 @@ class CustomerOrderRepository(BaseRepository):
     async def create_customer_order(self, order: CustomerOrderInSchema) -> CustomerOrderOutSchema:
         query = customer_order.insert().values(
             inn_customer=order.inn_customer,
-            physical_properties=order.physical_properties,
+            physical_property=order.physical_property,
             weight=order.weight,
             dimension=order.dimension,
             loading_type=order.loading_type,
