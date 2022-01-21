@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class TransporterContactInSchema(BaseModel):
-    inn_customer: str
+    inn_transporter: str
     name: str
     surname: str
     patronymic: str | None
