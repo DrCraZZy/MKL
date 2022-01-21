@@ -3,6 +3,8 @@ from project.app.repositories.customer_order import CustomerOrderRepository
 from project.app.repositories.customer_contact import CustomerContactRepository
 from project.app.repositories.loading_type import LoadingTypeRepository
 from project.app.repositories.physical_property import PhysicalPropertyRepository
+from project.app.repositories.transporter import TransporterRepository
+
 
 from project.app.db.database import database
 
@@ -25,3 +27,7 @@ def get_loading_type_repository() -> LoadingTypeRepository:
 
 def get_physical_property_repository() -> PhysicalPropertyRepository:
     return PhysicalPropertyRepository(database=database)
+
+
+def get_transporter_repository() -> TransporterRepository:
+    return TransporterRepository(database=database)
