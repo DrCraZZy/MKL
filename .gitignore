@@ -1,3 +1,4 @@
 venv/
 .idea/
 .env_dev
+project/log/logging.log
