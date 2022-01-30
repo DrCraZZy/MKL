@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from project.app.db.database import database
 from project.app.db import db_create  # crete all tables
@@ -7,6 +8,15 @@ from project.app.endpoints import customer, customer_order, customer_contact, lo
     transporter, transporter_contact, transporter_vehicle
 
 app = FastAPI(title="MKL")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(customer.router, prefix="/customers", tags=["Customer"])
 app.include_router(customer_order.router, prefix="/orders", tags=["Customer order"])
 app.include_router(customer_contact.router, prefix="/customer_contact", tags=["Customer contact"])
