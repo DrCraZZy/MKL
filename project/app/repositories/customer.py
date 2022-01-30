@@ -1,17 +1,16 @@
-from typing import List
-from fastapi import HTTPException, status
 from datetime import datetime
 
 from project.app.repositories.base_repository import BaseRepository
 from project.app.schema.customer import CustomerSchema, CustomerOutSchema
 from project.app.db.tables.customer import customer_data
 from project.app.helper.log import logger
+from project.app.helper.endpoint_answer import EndpointAnswer
 
 
 class CustomerRepository(BaseRepository):
 
     @logger.catch
-    async def create_customer(self, customer: CustomerSchema) -> CustomerOutSchema:
+    async def create_customer(self, customer: CustomerSchema) -> EndpointAnswer:
         query = customer_data.insert().values(
             inn=customer.inn,
             kpp=customer.kpp,
@@ -28,63 +27,67 @@ class CustomerRepository(BaseRepository):
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
         )
-        await self.database.execute(query)
 
-        # check for data insertion, is data with new inn in the table
-        query = customer_data.select().where(customer_data.c.inn == customer.inn)
-        new_customer = await self.database.fetch_one(query)
+        try:
+            await self.database.execute(query)
+            # check for data insertion, is data with new inn in the table
+            query = customer_data.select().where(customer_data.c.inn == customer.inn)
+            new_customer = await self.database.fetch_one(query)
+            message = f"New customer with inn:'{customer.inn}' was created."
+            result = EndpointAnswer(status="success", message=message, obj=CustomerOutSchema.parse_obj(new_customer))
+            logger.info(message)
+        except Exception as e:
+            result = EndpointAnswer(status="fail", message=str(e))
 
-        if not new_customer:
-            message: str = "Customer can't be inserted. Please try it again."
-            logger.error(message)
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=message
-            )
-
-        logger.info(f"New customer with inn:'{customer.inn}' was created.")
-        return CustomerOutSchema.parse_obj(new_customer)
+        return result
 
     @logger.catch
-    async def get_all_customers(self, limit: int = 100, skip: int = 0) -> List[CustomerSchema]:
+    async def get_all_customers(self, limit: int = 100, skip: int = 0) -> EndpointAnswer:
         query = customer_data.select().limit(limit).offset(skip)
-        customer_list = await self.database.fetch_all(query)
-        customer_list_object = []
-        for c in customer_list:
-            customer_list_object.append(CustomerSchema.parse_obj(c))
+        try:
+            customer_list = await self.database.fetch_all(query)
+            customer_list_object = []
+            for c in customer_list:
+                customer_list_object.append(CustomerSchema.parse_obj(c))
+            result = EndpointAnswer(status="success",
+                                    message=f"Customer list was returned. ({len(customer_list_object)})",
+                                    result=customer_list_object)
+        except Exception as e:
+            result = EndpointAnswer(status="fail", message=str(e))
 
-        return customer_list_object
+        return result
 
     @logger.catch
-    async def get_customer_by_inn(self, customer_inn: str) -> CustomerSchema | None:
+    async def get_customer_by_inn(self, customer_inn: str) -> EndpointAnswer:
         query = customer_data.select().where(customer_data.c.inn == customer_inn)
-        customer = await self.database.fetch_one(query=query)
-
-        if customer:
-            customer_obj = CustomerSchema.parse_obj(customer)
-            return customer_obj
-
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Customer with inn:'{customer_inn}' does not exists."
-        )
+        try:
+            customer = await self.database.fetch_one(query=query)
+            if customer:
+                customer_obj = CustomerSchema.parse_obj(customer)
+                result = EndpointAnswer(status="success", message=f"Customer with {customer_inn} was found'",
+                                        result=customer_obj)
+            else:
+                result = EndpointAnswer(status="success", message=f"Customer with '{customer_inn}' was not found")
+        except Exception as e:
+            result = EndpointAnswer(status="fail", message=str(e))
+        return result
 
     @logger.catch
-    async def get_customer_by_email(self, customer_email: str) -> CustomerSchema | None:
+    async def get_customer_by_email(self, customer_email: str) -> EndpointAnswer:
         query = customer_data.select().where(customer_data.c.email == customer_email).first()
-        customer = await self.database.fetch_one(query=query)
+        result = None
+        try:
+            customer = await self.database.fetch_one(query=query)
 
-        if customer:
-            customer_obj = CustomerSchema.parse_obj(customer)
-            return customer_obj
-
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Customer with email:'{customer_email}' does not exists."
-        )
+            if customer:
+                customer_obj = CustomerSchema.parse_obj(customer)
+                result = EndpointAnswer(status="success", message="Return 'get customer by inn'", result=customer_obj)
+        except Exception as e:
+            result = EndpointAnswer(status="fail", message=str(e))
+        return result
 
     @logger.catch
-    async def update_customer_by_inn(self, customer_inn: str, customer: CustomerSchema) -> CustomerSchema:
+    async def update_customer_by_inn(self, customer_inn: str, customer: CustomerSchema) -> EndpointAnswer:
         updated_customer = CustomerSchema(
             inn=customer_inn,
             kpp=customer.kpp,
@@ -105,15 +108,25 @@ class CustomerRepository(BaseRepository):
         values.pop("created_at")
         values.pop("inn")
         query = customer_data.update().where(customer_data.c.inn == customer_inn).values(**values)
-        await self.database.execute(query)
 
-        logger.info(f"Customer with inn:'{customer_inn}' was updated.")
-        return updated_customer
+        try:
+            await self.database.execute(query)
+            logger.info(f"Customer with inn:'{customer_inn}' was updated.")
+            result = EndpointAnswer(status="success",
+                                    message=f"Customer with inn:'{customer_inn}' was updated.",
+                                    result=updated_customer)
+        except Exception as e:
+            result = EndpointAnswer(status="fail", message=str(e))
+        return result
 
     @logger.catch
-    async def delete_customer_by_inn(self, customer_inn: str) -> dict:
+    async def delete_customer_by_inn(self, customer_inn: str) -> EndpointAnswer:
         query = customer_data.delete().where(customer_data.c.inn == customer_inn)
-        await self.database.execute(query)
-
-        logger.info(f"Customer with inn:'{customer_inn}' was deleted.")
-        return {"message": f"Customer with inn:'{customer_inn}' was deleted."}
+        try:
+            await self.database.execute(query)
+            message = f"Customer with inn:'{customer_inn}' was deleted."
+            logger.info(message)
+            result = EndpointAnswer(status="success", message=message)
+        except Exception as e:
+            result = EndpointAnswer(status="fail", message=str(e))
+        return result
