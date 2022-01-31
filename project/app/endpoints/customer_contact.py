@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, status, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from .depends import get_customer_contact_repository
-from project.app.schema.customer_contact import CustomerContactInSchema, CustomerContactOutSchema
+from project.app.schema.customer_contact import CustomerContactInSchema
 from project.app.repositories.customer_contact import CustomerContactRepository
 from project.app.helper.endpoint_answer import EndpointAnswer
 from project.app.helper.message_parser import parse_message
