@@ -80,10 +80,16 @@ class CustomerRepository(BaseRepository):
             customer = await self.database.fetch_one(query=query)
 
             if customer:
+                message = f"Return customer with email {customer_email}"
                 customer_obj = CustomerSchema.parse_obj(customer)
-                result = EndpointAnswer(status="success", message="Return 'get customer by inn'", result=customer_obj)
+                result = EndpointAnswer(status="success", message=message, result=customer_obj)
+                logger.info(message)
+            else:
+                message = f"There is no customer with email {customer_email}"
+                result = EndpointAnswer(status="success", message=message)
         except Exception as e:
             result = EndpointAnswer(status="fail", message=str(e))
+            logger.error(str(e))
         return result
 
     @logger.catch
@@ -111,12 +117,15 @@ class CustomerRepository(BaseRepository):
 
         try:
             await self.database.execute(query)
-            logger.info(f"Customer with inn:'{customer_inn}' was updated.")
+            message = f"Customer with inn:'{customer_inn}' was updated."
+            logger.info(message)
             result = EndpointAnswer(status="success",
-                                    message=f"Customer with inn:'{customer_inn}' was updated.",
+                                    message=message,
                                     result=updated_customer)
+            logger.info(message)
         except Exception as e:
             result = EndpointAnswer(status="fail", message=str(e))
+            logger.error(str(e))
         return result
 
     @logger.catch
