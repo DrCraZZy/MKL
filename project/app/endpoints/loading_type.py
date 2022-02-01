@@ -34,6 +34,7 @@ async def get_loading_type(ltr: LoadingTypeRepository = Depends(get_loading_type
 
     return answer
 
+
 @router.put("/", response_model=EndpointAnswer, status_code=status.HTTP_202_ACCEPTED)
 async def update_loading_type(
         lt_id: int,
@@ -47,6 +48,7 @@ async def update_loading_type(
         )
 
     return answer
+
 
 @router.delete("/", response_model=EndpointAnswer, status_code=status.HTTP_202_ACCEPTED)
 async def delete_loading_type(

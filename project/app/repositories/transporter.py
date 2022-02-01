@@ -1,17 +1,16 @@
-from typing import List
-from fastapi import HTTPException, status
 from datetime import datetime
 
 from project.app.repositories.base_repository import BaseRepository
-from project.app.schema.transporter import TransporterOutSchema, TransporterSchema
+from project.app.schema.transporter import TransporterSchema
 from project.app.db.tables.transporter import transporter_data
 from project.app.helper.log import logger
+from project.app.helper.endpoint_answer import EndpointAnswer
 
 
 class TransporterRepository(BaseRepository):
 
     @logger.catch
-    async def create_transporter(self, transporter: TransporterSchema) -> TransporterOutSchema:
+    async def create_transporter(self, transporter: TransporterSchema) -> EndpointAnswer:
         query = transporter_data.insert().values(
             inn=transporter.inn,
             kpp=transporter.kpp,
@@ -28,63 +27,90 @@ class TransporterRepository(BaseRepository):
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
         )
-        await self.database.execute(query)
+        try:
+            await self.database.execute(query)
+            # check for data insertion, is data with new inn in the table
+            query = transporter_data.select().where(transporter_data.c.inn == transporter.inn)
+            new_transporter = await self.database.fetch_one(query)
 
-        # check for data insertion, is data with new inn in the table
-        query = transporter_data.select().where(transporter_data.c.inn == transporter.inn)
-        new_transporter = await self.database.fetch_one(query)
-
-        if not new_transporter:
-            message: str = "Transporter can't be inserted. Please try it again."
+            if not new_transporter:
+                message: str = "Transporter can't be inserted. Please try it again."
+                result = EndpointAnswer(status="success", message=message)
+                logger.info(message)
+            else:
+                message: str = f"New transporter with inn:'{transporter.inn}' was created."
+                result = EndpointAnswer(status="success", message=message, result=new_transporter)
+                logger.info(message)
+        except Exception as e:
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
             logger.error(message)
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=message
-            )
 
-        logger.info(f"New transporter with inn:'{transporter.inn}' was created.")
-        return TransporterOutSchema.parse_obj(new_transporter)
+        return result
 
     @logger.catch
-    async def get_all_transporters(self, limit: int = 100, skip: int = 0) -> List[TransporterSchema]:
+    async def get_all_transporters(self, limit: int = 100, skip: int = 0) -> EndpointAnswer:
         query = transporter_data.select().limit(limit).offset(skip)
-        transporter_list = await self.database.fetch_all(query)
-        transporter_list_object = []
-        for c in transporter_list:
-            transporter_list_object.append(TransporterSchema.parse_obj(c))
+        try:
+            transporter_list = await self.database.fetch_all(query)
+            transporter_list_object = []
+            for c in transporter_list:
+                transporter_list_object.append(TransporterSchema.parse_obj(c))
+            message: str = "List of transporters is created."
+            result = EndpointAnswer(status="success", message=message, result=transporter_list_object)
+            logger.info(message)
+        except Exception as e:
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
+            logger.error(message)
 
-        return transporter_list_object
+        return result
 
     @logger.catch
-    async def get_transporter_by_inn(self, transporter_inn: str) -> TransporterSchema | None:
+    async def get_transporter_by_inn(self, transporter_inn: str) -> EndpointAnswer:
         query = transporter_data.select().where(transporter_data.c.inn == transporter_inn)
-        transporter = await self.database.fetch_one(query=query)
+        try:
+            transporter = await self.database.fetch_one(query=query)
+            if transporter:
+                transporter_obj = TransporterSchema.parse_obj(transporter)
+                message = f"Return transporter with inn {transporter_inn}"
+                result = EndpointAnswer(status="success", message=message, result=transporter_obj)
+                logger.info(message)
+            else:
+                message = f"There is no transporter with inn {transporter_inn}"
+                result = EndpointAnswer(status="success", message=message)
+                logger.info(message)
+        except Exception as e:
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
+            logger.error(message)
 
-        if transporter:
-            transporter_obj = TransporterSchema.parse_obj(transporter)
-            return transporter_obj
-
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Transporter with inn:'{transporter_inn}' does not exists."
-        )
+        return result
 
     @logger.catch
-    async def get_transporter_by_email(self, transporter_email: str) -> TransporterSchema | None:
+    async def get_transporter_by_email(self, transporter_email: str) -> EndpointAnswer:
         query = transporter_data.select().where(transporter_data.c.email == transporter_email).first()
-        transporter = await self.database.fetch_one(query=query)
 
-        if transporter:
-            transporter_obj = TransporterSchema.parse_obj(transporter)
-            return transporter_obj
+        try:
+            transporter = await self.database.fetch_one(query=query)
+            if transporter:
+                transporter_obj = TransporterSchema.parse_obj(transporter)
+                message = f"Return transporter with email {transporter_email}"
+                result = EndpointAnswer(status="success", message=message, result=transporter_obj)
+                logger.info(message)
+            else:
+                message = f"There is no transporter with email {transporter_email}"
+                result = EndpointAnswer(status="success", message=message)
+                logger.info(message)
+        except Exception as e:
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
+            logger.error(message)
 
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Transporter with email:'{transporter_email}' does not exists."
-        )
+        return result
 
     @logger.catch
-    async def update_transporter_by_inn(self, transporter_inn: str, transporter: TransporterSchema) -> TransporterSchema:
+    async def update_transporter_by_inn(self, transporter_inn: str, transporter: TransporterSchema) -> EndpointAnswer:
         updated_transporter = TransporterSchema(
             inn=transporter_inn,
             kpp=transporter.kpp,
@@ -105,15 +131,30 @@ class TransporterRepository(BaseRepository):
         values.pop("created_at")
         values.pop("inn")
         query = transporter_data.update().where(transporter_data.c.inn == transporter_inn).values(**values)
-        await self.database.execute(query)
 
-        logger.info(f"Transporter with inn:'{transporter_inn}' was updated.")
-        return updated_transporter
+        try:
+            await self.database.execute(query)
+            message: str = f"Transporter with inn:'{transporter_inn}' was updated."
+            result = EndpointAnswer(status="success", message=message, result=updated_transporter)
+            logger.info(message)
+        except Exception as e:
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
+            logger.error(message)
+
+        return result
 
     @logger.catch
-    async def delete_transporter_by_inn(self, transporter_inn: str) -> dict:
+    async def delete_transporter_by_inn(self, transporter_inn: str) -> EndpointAnswer:
         query = transporter_data.delete().where(transporter_data.c.inn == transporter_inn)
-        await self.database.execute(query)
+        try:
+            await self.database.execute(query)
+            message: str = f"Transporter with inn:'{transporter_inn}' was deleted."
+            result = EndpointAnswer(status="success", message=message)
+            logger.info(message)
+        except Exception as e:
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
+            logger.error(message)
 
-        logger.info(f"Transporter with inn:'{transporter_inn}' was deleted.")
-        return {"message": f"Transporter with inn:'{transporter_inn}' was deleted."}
+        return result

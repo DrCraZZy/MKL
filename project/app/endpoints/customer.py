@@ -15,7 +15,7 @@ async def create_customer(
         customers: CustomerRepository = Depends(get_customer_repository)):
     answer: EndpointAnswer = await customers.create_customer(customer)
 
-    if answer.status != "success" :
+    if answer.status != "success":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=parse_message(answer.message)
@@ -31,7 +31,7 @@ async def get_customers(
         customers: CustomerRepository = Depends(get_customer_repository)):
     answer: EndpointAnswer = await customers.get_all_customers(limit=limit, skip=skip)
 
-    if answer.status != "success" :
+    if answer.status != "success":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=parse_message(answer.message)

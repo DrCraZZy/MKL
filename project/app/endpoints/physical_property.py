@@ -24,8 +24,8 @@ async def create_physical_property(
 
 
 @router.get("/", response_model=EndpointAnswer, status_code=status.HTTP_200_OK)
-async def get_physical_property(ppr: PhysicalPropertyRepository = Depends(get_physical_property_repository)):
-    answer: EndpointAnswer = await ppr.get_physical_property()
+async def get_physical_properties(ppr: PhysicalPropertyRepository = Depends(get_physical_property_repository)):
+    answer: EndpointAnswer = await ppr.get_physical_properties()
     if answer.status != "success":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

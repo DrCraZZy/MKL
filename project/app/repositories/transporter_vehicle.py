@@ -1,18 +1,17 @@
-from typing import List
 from datetime import datetime
-from fastapi import HTTPException, status
 from sqlalchemy import and_
 
 from project.app.repositories.base_repository import BaseRepository
 from project.app.schema.transporter_vehicle import TransporterVehicleInSchema, TransporterVehicleOutSchema
 from project.app.db.tables.transporter import transporter_vehicle
 from project.app.helper.log import logger
+from project.app.helper.endpoint_answer import EndpointAnswer
 
 
 class TransporterVehicleRepository(BaseRepository):
 
     @logger.catch
-    async def create_transporter_vehicle(self, vehicle: TransporterVehicleInSchema) -> TransporterVehicleOutSchema:
+    async def create_transporter_vehicle(self, vehicle: TransporterVehicleInSchema) -> EndpointAnswer:
         query = transporter_vehicle.insert().values(
             inn_transporter=vehicle.inn_transporter,
             brand=vehicle.brand,
@@ -30,64 +29,82 @@ class TransporterVehicleRepository(BaseRepository):
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
         )
-
-        new_id = await self.database.execute(query)
-
-        query = transporter_vehicle.select().where(transporter_vehicle.c.id == new_id)
-        new_vehicle = await self.database.fetch_one(query)
-
-        if not new_vehicle:
-            message: str = "Vehicle can't be inserted. Please try it again."
+        try:
+            new_id = await self.database.execute(query)
+            query = transporter_vehicle.select().where(transporter_vehicle.c.id == new_id)
+            new_vehicle = await self.database.fetch_one(query)
+            if not new_vehicle:
+                message: str = "Vehicle can't be inserted. Please try it again."
+                result = EndpointAnswer(status="success", message=message)
+                logger.info(message)
+            else:
+                message: str = \
+                    f"New vehicle with id:'{new_id}' for customer with inn:'{vehicle.inn_transporter}' was created."
+                result = EndpointAnswer(status="success", message=message, result=new_vehicle)
+                logger.info(message)
+        except Exception as e:
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
             logger.error(message)
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=message
-            )
 
-        logger.info(f"New vehicle with id:'{new_id}' for customer with inn:'{vehicle.inn_transporter}' was created.")
-
-        return TransporterVehicleOutSchema.parse_obj(new_vehicle)
+        return result
 
     @logger.catch
-    async def get_all_vehicles(self, limit: int = 100, skip: int = 0) -> List[TransporterVehicleOutSchema]:
+    async def get_all_vehicles(self, limit: int = 100, skip: int = 0) -> EndpointAnswer:
         query = transporter_vehicle.select().limit(limit).offset(skip)
-        customer_list = await self.database.fetch_all(query)
-        customer_list_object = []
-        for c in customer_list:
-            customer_list_object.append(TransporterVehicleOutSchema.parse_obj(c))
+        try:
+            vehicle_list = await self.database.fetch_all(query)
+            if not vehicle_list:
+                message = f"Vehicles were not found"
+                result = EndpointAnswer(status="success", message=message)
+                logger.info(message)
+            else:
+                vehicle_list_object = []
+                for c in vehicle_list:
+                    vehicle_list_object.append(TransporterVehicleOutSchema.parse_obj(c))
+                message = f"There are '{len(vehicle_list_object)}' vehicles."
+                result = EndpointAnswer(status="success", message=message, result=vehicle_list_object)
+                logger.info(message)
+        except Exception as e:
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
+            logger.error(message)
 
-        return customer_list_object
+        return result
 
     @logger.catch
     async def get_transporter_vehicles_by_inn(self, transporter_inn: str, limit: int = 100, skip: int = 0) -> \
-            List[TransporterVehicleOutSchema]:
-        query = \
-            transporter_vehicle. \
-            select(). \
-            where(transporter_vehicle.c.inn_transporter == transporter_inn). \
-            limit(limit). \
-            offset(skip)
-        vehicle_list = await self.database.fetch_all(query=query)
+            EndpointAnswer:
+        query = transporter_vehicle.select().where(transporter_vehicle.c.inn_transporter == transporter_inn). \
+            limit(limit).offset(skip)
+        try:
+            vehicle_list = await self.database.fetch_all(query=query)
 
-        if not vehicle_list:
-            message = f"Vehicles for customer with inn:'{transporter_inn}' does not exists."
+            if not vehicle_list:
+                message = f"Vehicles for customer with inn:'{transporter_inn}' does not exists."
+                result = EndpointAnswer(status="success", message=message)
+                logger.error(message)
+            else:
+                vehicle_list_object = []
+                for o in vehicle_list:
+                    vehicle_list_object.append(TransporterVehicleOutSchema.parse_obj(o))
+                message = f"There are '{len(vehicle_list_object)}' " \
+                          f"vehicles(s) for transporter with inn:'{transporter_inn}'"
+                result = EndpointAnswer(status="success", message=message, result=vehicle_list_object)
+                logger.info(message)
+
+        except Exception as e:
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
             logger.error(message)
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=message
-            )
 
-        vehicle_list_object = []
-        for o in vehicle_list:
-            vehicle_list_object.append(TransporterVehicleOutSchema.parse_obj(o))
-
-        return vehicle_list_object
+        return result
 
     @logger.catch
     async def update_vehicle_by_id_by_inn(self,
                                           vehicle_id: int,
                                           transporter_inn: str,
-                                          vehicle: TransporterVehicleInSchema) -> TransporterVehicleOutSchema:
+                                          vehicle: TransporterVehicleInSchema) -> EndpointAnswer:
         query = transporter_vehicle.update().where(
             and_(transporter_vehicle.c.inn_transporter == transporter_inn, transporter_vehicle.c.id == vehicle_id)). \
             values(
@@ -106,23 +123,36 @@ class TransporterVehicleRepository(BaseRepository):
             is_available=vehicle.is_available,
             updated_at=datetime.utcnow()
         )
-        await self.database.execute(query)
+        try:
+            await self.database.execute(query)
 
-        query = transporter_vehicle.select().where(
-            and_(
-                transporter_vehicle.c.inn_transporter == transporter_inn,
-                transporter_vehicle.c.id == vehicle_id)
-        )
-        updated_vehicle = await self.database.fetch_one(query)
+            query = transporter_vehicle.select().where(
+                and_(
+                    transporter_vehicle.c.inn_transporter == transporter_inn,
+                    transporter_vehicle.c.id == vehicle_id)
+            )
+            updated_vehicle = await self.database.fetch_one(query)
 
-        logger.info(f"Vehicle with id:{vehicle_id} for customer with inn:'{transporter_inn}' was updated.")
-        return TransporterVehicleOutSchema.parse_obj(updated_vehicle)
+            message: str = f"Vehicle with id:{vehicle_id} for customer with inn:'{transporter_inn}' was updated."
+            result = EndpointAnswer(status="success", message=message, result=updated_vehicle)
+            logger.info(message)
+        except Exception as e:
+            result = EndpointAnswer(status="fail", message=str(e))
+            logger.error(str(e))
+
+        return result
 
     @logger.catch
-    async def delete_vehicle_by_id(self, vehicle_id: int) -> dict:
+    async def delete_vehicle_by_id(self, vehicle_id: int) -> EndpointAnswer:
         query = transporter_vehicle.delete().where(transporter_vehicle.c.id == vehicle_id)
-        await self.database.execute(query)
+        try:
+            await self.database.execute(query)
+            message = f"Vehicle with id:'{vehicle_id}' was deleted."
+            result = EndpointAnswer(status="success", message=message)
+            logger.info(message)
+        except Exception as e:
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
+            logger.error(message)
 
-        message = f"Vehicle with id:'{vehicle_id}' was deleted."
-        logger.info(message)
-        return {"message": message}
+        return result

@@ -25,9 +25,11 @@ class CustomerContactRepository(BaseRepository):
             else:
                 message = f"Contact with inn {customer_inn} was not found."
                 result = EndpointAnswer(status="success", message=message)
+                logger.info(message)
         except Exception as e:
-            result = EndpointAnswer(status="fail", message=str(e))
-            logger.error(str(e))
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
+            logger.error(message)
 
         return result
 
@@ -50,16 +52,17 @@ class CustomerContactRepository(BaseRepository):
             new_contact = await self.database.fetch_one(query)
             if not new_contact:
                 message: str = "Contact can't be inserted. Please try it again."
-                logger.info(message)
                 result = EndpointAnswer(status="success", message=message)
+                logger.info(message)
             else:
                 message: str = \
                     f"New contact with id:'{new_id}' for customer with inn:'{contact.inn_customer}' was created."
-                logger.info(message)
                 result = EndpointAnswer(status="success", message=message, result=new_contact)
+                logger.info(message)
         except Exception as e:
-            result = EndpointAnswer(status="fail", message=str(e))
-            logger.error(str(e))
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
+            logger.error(message)
 
         return result
 
@@ -95,8 +98,9 @@ class CustomerContactRepository(BaseRepository):
             result = EndpointAnswer(status="success", message=message, result=updated_contact)
             logger.info(message)
         except Exception as e:
-            result = EndpointAnswer(status="fail", message=str(e))
-            logger.error(str(e))
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
+            logger.error(message)
 
         return result
 
@@ -109,6 +113,8 @@ class CustomerContactRepository(BaseRepository):
             result = EndpointAnswer(status="success", message=message)
             logger.info(message)
         except Exception as e:
-            result = EndpointAnswer(status="fail", message=str(e))
-            logger.error(str(e))
+            message: str = str(e)
+            result = EndpointAnswer(status="fail", message=message)
+            logger.error(message)
+
         return result

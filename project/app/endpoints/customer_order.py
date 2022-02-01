@@ -54,7 +54,7 @@ async def get_customer_orders_by_inn(
     return answer
 
 
-@router.put("/", response_model=EndpointAnswer, status_code=status.HTTP_201_CREATED)
+@router.put("/", response_model=EndpointAnswer, status_code=status.HTTP_202_ACCEPTED)
 async def update_order(
         order_id: int,
         customer_inn: str,
