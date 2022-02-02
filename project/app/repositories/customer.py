@@ -11,36 +11,40 @@ class CustomerRepository(BaseRepository):
 
     @logger.catch
     async def create_customer(self, customer: CustomerSchema) -> EndpointAnswer:
-        query = customer_data.insert().values(
-            inn=customer.inn,
-            kpp=customer.kpp,
-            ogrn=customer.ogrn,
-            name=customer.name,
-            date_of_formation=customer.date_of_formation,
-            director=customer.director,
-            legal_address=customer.legal_address,
-            address=customer.address,
-            email=customer.email,
-            telephone=customer.telephone,
-            payment_account=customer.payment_account,
-            corporate_account=customer.corporate_account,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
-        )
+        if not self.check_if_inn_exists(customer.inn):
+            query = customer_data.insert().values(
+                inn=customer.inn,
+                kpp=customer.kpp,
+                ogrn=customer.ogrn,
+                name=customer.name,
+                date_of_formation=customer.date_of_formation,
+                director=customer.director,
+                legal_address=customer.legal_address,
+                address=customer.address,
+                email=customer.email,
+                telephone=customer.telephone,
+                payment_account=customer.payment_account,
+                corporate_account=customer.corporate_account,
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow()
+            )
 
-        try:
-            await self.database.execute(query)
-            # check for data insertion, is data with new inn in the table
-            query = customer_data.select().where(customer_data.c.inn == customer.inn)
-            new_customer = await self.database.fetch_one(query)
-            message = f"New customer with inn:'{customer.inn}' was created."
-            result = EndpointAnswer(status="success", message=message, obj=CustomerOutSchema.parse_obj(new_customer))
-            logger.info(message)
-        except Exception as e:
-            message: str = str(e)
+            try:
+                await self.database.execute(query)
+                # check for data insertion, is data with new inn in the table
+                query = customer_data.select().where(customer_data.c.inn == customer.inn)
+                new_customer = await self.database.fetch_one(query)
+                message = f"New customer with inn:'{customer.inn}' was created."
+                result = EndpointAnswer(status="success", message=message, obj=CustomerOutSchema.parse_obj(new_customer))
+                logger.info(message)
+            except Exception as e:
+                message: str = str(e)
+                result = EndpointAnswer(status="fail", message=message)
+                logger.error(message)
+        else:
+            message = f"There is already  customer with inn:'{customer.inn}' in the table."
             result = EndpointAnswer(status="fail", message=message)
-            logger.error(message)
-
+            logger.info(message)
         return result
 
     @logger.catch
@@ -104,50 +108,69 @@ class CustomerRepository(BaseRepository):
 
     @logger.catch
     async def update_customer_by_inn(self, customer_inn: str, customer: CustomerSchema) -> EndpointAnswer:
-        updated_customer = CustomerSchema(
-            inn=customer_inn,
-            kpp=customer.kpp,
-            ogrn=customer.ogrn,
-            name=customer.name,
-            date_of_formation=customer.date_of_formation,
-            director=customer.director,
-            legal_address=customer.legal_address,
-            address=customer.address,
-            email=customer.email,
-            telephone=customer.telephone,
-            payment_account=customer.payment_account,
-            corporate_account=customer.corporate_account,
-            updated_at=datetime.utcnow()
-        )
+        if self.check_if_inn_exists(customer_inn):
+            updated_customer = CustomerSchema(
+                inn=customer_inn,
+                kpp=customer.kpp,
+                ogrn=customer.ogrn,
+                name=customer.name,
+                date_of_formation=customer.date_of_formation,
+                director=customer.director,
+                legal_address=customer.legal_address,
+                address=customer.address,
+                email=customer.email,
+                telephone=customer.telephone,
+                payment_account=customer.payment_account,
+                corporate_account=customer.corporate_account,
+                updated_at=datetime.utcnow()
+            )
 
-        values = {**updated_customer.dict()}
-        values.pop("created_at")
-        values.pop("inn")
-        query = customer_data.update().where(customer_data.c.inn == customer_inn).values(**values)
+            values = {**updated_customer.dict()}
+            values.pop("created_at")
+            values.pop("inn")
+            query = customer_data.update().where(customer_data.c.inn == customer_inn).values(**values)
 
-        try:
-            await self.database.execute(query)
-            message = f"Customer with inn:'{customer_inn}' was updated."
-            result = EndpointAnswer(status="success", message=message, result=updated_customer)
+            try:
+                await self.database.execute(query)
+                message = f"Customer with inn:'{customer_inn}' was updated."
+                result = EndpointAnswer(status="success", message=message, result=updated_customer)
+                logger.info(message)
+            except Exception as e:
+                message: str = str(e)
+                result = EndpointAnswer(status="fail", message=message)
+                logger.error(message)
+        else:
+            message = f"There is no customer with inn:'{customer_inn}' for update in the table."
+            result = EndpointAnswer(status="success", message=message)
             logger.info(message)
-        except Exception as e:
-            message: str = str(e)
-            result = EndpointAnswer(status="fail", message=message)
-            logger.error(message)
-
         return result
 
     @logger.catch
     async def delete_customer_by_inn(self, customer_inn: str) -> EndpointAnswer:
-        query = customer_data.delete().where(customer_data.c.inn == customer_inn)
-        try:
-            await self.database.execute(query)
-            message = f"Customer with inn:'{customer_inn}' was deleted."
+        if self.check_if_inn_exists(customer_inn):
+            query = customer_data.delete().where(customer_data.c.inn == customer_inn)
+            try:
+                await self.database.execute(query)
+                message = f"Customer with inn:'{customer_inn}' was deleted."
+                result = EndpointAnswer(status="success", message=message)
+                logger.info(message)
+            except Exception as e:
+                message: str = str(e)
+                result = EndpointAnswer(status="fail", message=message)
+                logger.info(message)
+        else:
+            message = f"There is no customer with inn:'{customer_inn}' in the table."
             result = EndpointAnswer(status="success", message=message)
             logger.info(message)
-        except Exception as e:
-            message: str = str(e)
-            result = EndpointAnswer(status="fail", message=message)
-            logger.info(message)
-
         return result
+
+    async def check_if_inn_exists(self, customer_inn: str) -> bool:
+        query = customer_data.select().where(customer_data.c.inn == customer_inn).first()
+        try:
+            customer = await self.database.fetch_one(query=query)
+            if customer:
+                return True
+            return False
+        except Exception as e:
+            logger.error(str(e))
+            return False
