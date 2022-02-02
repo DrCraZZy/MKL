@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from project.app.db.database import database
 from project.app.db import db_create  # crete all tables
 from project.app.endpoints import customer, customer_order, customer_contact, loading_type, physical_property, \
-    transporter, transporter_contact, transporter_vehicle
+    transporter, transporter_contact, transporter_vehicle, load_capacity
 
 app = FastAPI(title="MKL")
 
@@ -25,6 +25,7 @@ app.include_router(physical_property.router, prefix="/physical_property", tags=[
 app.include_router(transporter.router, prefix="/transporter", tags=["Transporter"])
 app.include_router(transporter_contact.router, prefix="/transporter_contact", tags=["Transporter contact"])
 app.include_router(transporter_vehicle.router, prefix="/transporter_vehicle", tags=["Transporter vehicle"])
+app.include_router(load_capacity.router, prefix="/load_capacity", tags=["Load capacity"])
 
 
 @app.on_event("startup")

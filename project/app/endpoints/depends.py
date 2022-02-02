@@ -6,6 +6,7 @@ from project.app.repositories.physical_property import PhysicalPropertyRepositor
 from project.app.repositories.transporter import TransporterRepository
 from project.app.repositories.transporter_contact import TransporterContactRepository
 from project.app.repositories.transporter_vehicle import TransporterVehicleRepository
+from project.app.repositories.load_capacity import LoadCapacityRepository
 
 
 from project.app.db.database import database
@@ -30,6 +31,9 @@ def get_loading_type_repository() -> LoadingTypeRepository:
 def get_physical_property_repository() -> PhysicalPropertyRepository:
     return PhysicalPropertyRepository(database=database)
 
+
+def get_load_capacity_repository() -> LoadCapacityRepository:
+    return LoadCapacityRepository(database=database)
 
 def get_transporter_repository() -> TransporterRepository:
     return TransporterRepository(database=database)

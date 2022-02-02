@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, String
+from sqlalchemy import Table, Column, Integer, String, Float
 from project.app.db.database import metadata
 
 physical_property = Table(
@@ -15,4 +15,15 @@ loading_type = Table(
     Column("id", Integer, primary_key=True, unique=True, autoincrement=True),
     Column("loading_type", String),
     Column("description", String)
+)
+
+load_capacity = Table(
+    "load_capacity",
+    metadata,
+    Column("id", Integer, primary_key=True, unique=True, autoincrement=True),
+    Column("weight_to", Float),
+    Column("length_to", Float),
+    Column("width_to", Float),
+    Column("height_to", Float),
+    Column("volume_to", Float)
 )
