@@ -1,17 +1,19 @@
 from datetime import datetime
 
+from project.app.helper.message_parser import parse_message
 from project.app.repositories.base_repository import BaseRepository
 from project.app.schema.customer import CustomerSchema, CustomerOutSchema
 from project.app.db.tables.customer import customer_data
 from project.app.helper.log import logger
 from project.app.helper.endpoint_answer import EndpointAnswer
+from project.app.helper.check_data import is_inn_exists
 
 
 class CustomerRepository(BaseRepository):
 
     @logger.catch
     async def create_customer(self, customer: CustomerSchema) -> EndpointAnswer:
-        if not self.check_if_inn_exists(customer.inn):
+        if not await is_inn_exists(customer.inn, customer_data, self.database):
             query = customer_data.insert().values(
                 inn=customer.inn,
                 kpp=customer.kpp,
@@ -35,14 +37,16 @@ class CustomerRepository(BaseRepository):
                 query = customer_data.select().where(customer_data.c.inn == customer.inn)
                 new_customer = await self.database.fetch_one(query)
                 message = f"New customer with inn:'{customer.inn}' was created."
-                result = EndpointAnswer(status="success", message=message, obj=CustomerOutSchema.parse_obj(new_customer))
+                result = EndpointAnswer(status="success",
+                                        message=message,
+                                        result=CustomerOutSchema.parse_obj(new_customer))
                 logger.info(message)
             except Exception as e:
-                message: str = str(e)
+                message: str = parse_message(str(e))
                 result = EndpointAnswer(status="fail", message=message)
                 logger.error(message)
         else:
-            message = f"There is already  customer with inn:'{customer.inn}' in the table."
+            message = f"There is already customer with inn:'{customer.inn}' in the table."
             result = EndpointAnswer(status="fail", message=message)
             logger.info(message)
         return result
@@ -59,7 +63,7 @@ class CustomerRepository(BaseRepository):
                                     message=f"Customer list was returned. ({len(customer_list_object)})",
                                     result=customer_list_object)
         except Exception as e:
-            message: str = str(e)
+            message: str = parse_message(str(e))
             result = EndpointAnswer(status="fail", message=message)
             logger.error(message)
 
@@ -77,10 +81,10 @@ class CustomerRepository(BaseRepository):
                 logger.info(message)
             else:
                 message: str = f"Customer with '{customer_inn}' was not found"
-                result = EndpointAnswer(status="success", message=message)
+                result = EndpointAnswer(status="fail", message=message)
                 logger.info(message)
         except Exception as e:
-            message: str = str(e)
+            message: str = parse_message(str(e))
             result = EndpointAnswer(status="fail", message=message)
             logger.error(message)
         return result
@@ -98,17 +102,17 @@ class CustomerRepository(BaseRepository):
                 logger.info(message)
             else:
                 message = f"There is no customer with email {customer_email}"
-                result = EndpointAnswer(status="success", message=message)
+                result = EndpointAnswer(status="fail", message=message)
                 logger.info(message)
         except Exception as e:
-            message: str = str(e)
+            message: str = parse_message(str(e))
             result = EndpointAnswer(status="fail", message=message)
             logger.error(message)
         return result
 
     @logger.catch
     async def update_customer_by_inn(self, customer_inn: str, customer: CustomerSchema) -> EndpointAnswer:
-        if self.check_if_inn_exists(customer_inn):
+        if await is_inn_exists(customer.inn, customer_data, self.database):
             updated_customer = CustomerSchema(
                 inn=customer_inn,
                 kpp=customer.kpp,
@@ -136,18 +140,18 @@ class CustomerRepository(BaseRepository):
                 result = EndpointAnswer(status="success", message=message, result=updated_customer)
                 logger.info(message)
             except Exception as e:
-                message: str = str(e)
+                message: str = parse_message(str(e))
                 result = EndpointAnswer(status="fail", message=message)
                 logger.error(message)
         else:
             message = f"There is no customer with inn:'{customer_inn}' for update in the table."
-            result = EndpointAnswer(status="success", message=message)
+            result = EndpointAnswer(status="fail", message=message)
             logger.info(message)
         return result
 
     @logger.catch
     async def delete_customer_by_inn(self, customer_inn: str) -> EndpointAnswer:
-        if self.check_if_inn_exists(customer_inn):
+        if await is_inn_exists(customer_inn, customer_data, self.database):
             query = customer_data.delete().where(customer_data.c.inn == customer_inn)
             try:
                 await self.database.execute(query)
@@ -155,22 +159,11 @@ class CustomerRepository(BaseRepository):
                 result = EndpointAnswer(status="success", message=message)
                 logger.info(message)
             except Exception as e:
-                message: str = str(e)
+                message: str = parse_message(str(e))
                 result = EndpointAnswer(status="fail", message=message)
                 logger.info(message)
         else:
             message = f"There is no customer with inn:'{customer_inn}' in the table."
-            result = EndpointAnswer(status="success", message=message)
+            result = EndpointAnswer(status="fail", message=message)
             logger.info(message)
         return result
-
-    async def check_if_inn_exists(self, customer_inn: str) -> bool:
-        query = customer_data.select().where(customer_data.c.inn == customer_inn).first()
-        try:
-            customer = await self.database.fetch_one(query=query)
-            if customer:
-                return True
-            return False
-        except Exception as e:
-            logger.error(str(e))
-            return False

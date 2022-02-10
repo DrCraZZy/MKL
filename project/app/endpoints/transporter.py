@@ -14,11 +14,6 @@ async def create_transporter(
         transporter: TransporterSchema,
         transporters: TransporterRepository = Depends(get_transporter_repository)):
     answer: EndpointAnswer = await transporters.create_transporter(transporter)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -28,11 +23,6 @@ async def get_transporters(
         skip: int = 0,
         transporters: TransporterRepository = Depends(get_transporter_repository)):
     answer: EndpointAnswer = await transporters.get_all_transporters(limit=limit, skip=skip)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -42,11 +32,6 @@ async def get_transporter_by_inn(
         transporter_inn: str,
         transporters: TransporterRepository = Depends(get_transporter_repository)):
     answer: EndpointAnswer = await transporters.get_transporter_by_inn(transporter_inn=transporter_inn)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -56,11 +41,6 @@ async def get_transporter_by_email(
         transporter_email: str,
         transporters: TransporterRepository = Depends(get_transporter_repository)):
     answer: EndpointAnswer = await transporters.get_transporter_by_email(transporter_email=transporter_email)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -72,11 +52,6 @@ async def update_transporter_by_inn(
         transporters: TransporterRepository = Depends(get_transporter_repository)):
     answer: EndpointAnswer = await transporters.update_transporter_by_inn(transporter_inn=transporter_inn,
                                                                           transporter=transporter)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -86,10 +61,5 @@ async def delete_transporter_by_inn(
         transporter_inn: str,
         transporters: TransporterRepository = Depends(get_transporter_repository)):
     answer: EndpointAnswer = await transporters.delete_transporter_by_inn(transporter_inn=transporter_inn)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer

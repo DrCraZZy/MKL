@@ -13,7 +13,7 @@ customer_data = Table(
     Column("date_of_formation", Date),
     Column("director", String),
     Column("legal_address", String, nullable=False),
-    Column("address", String, nullable=False),
+    Column("address", String),
     Column("email", String, nullable=False),
     Column("telephone", String),
     Column("payment_account", String, nullable=False),

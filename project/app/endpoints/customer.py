@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from .depends import get_customer_repository
 from project.app.schema.customer import CustomerSchema
 from project.app.repositories.customer import CustomerRepository
 from project.app.helper.endpoint_answer import EndpointAnswer
-from project.app.helper.message_parser import parse_message
 
 router = APIRouter()
 
@@ -14,12 +13,6 @@ async def create_customer(
         customer: CustomerSchema,
         customers: CustomerRepository = Depends(get_customer_repository)):
     answer: EndpointAnswer = await customers.create_customer(customer)
-
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -31,12 +24,6 @@ async def get_customers(
         customers: CustomerRepository = Depends(get_customer_repository)):
     answer: EndpointAnswer = await customers.get_all_customers(limit=limit, skip=skip)
 
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
-
     return answer
 
 
@@ -46,11 +33,6 @@ async def get_customer_by_inn(
         customers: CustomerRepository = Depends(get_customer_repository)):
     answer: EndpointAnswer = await customers.get_customer_by_inn(customer_inn=customer_inn)
 
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=parse_message(answer.message)
-        )
     return answer
 
 
@@ -59,12 +41,6 @@ async def get_customer_by_email(
         customer_email: str,
         customers: CustomerRepository = Depends(get_customer_repository)):
     answer: EndpointAnswer = await customers.get_customer_by_email(customer_email=customer_email)
-
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -76,12 +52,6 @@ async def update_customer_by_inn(
         customers: CustomerRepository = Depends(get_customer_repository)):
     answer: EndpointAnswer = await customers.update_customer_by_inn(customer_inn=customer_inn, customer=customer)
 
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
-
     return answer
 
 
@@ -90,11 +60,5 @@ async def delete_customer_by_inn(
         customer_inn: str,
         customers: CustomerRepository = Depends(get_customer_repository)):
     answer: EndpointAnswer = await customers.delete_customer_by_inn(customer_inn=customer_inn)
-
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
