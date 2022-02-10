@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status
 
 from .depends import get_transporter_repository
 from project.app.schema.transporter import TransporterSchema
 from project.app.repositories.transporter import TransporterRepository
 from project.app.helper.endpoint_answer import EndpointAnswer
-from project.app.helper.message_parser import parse_message
 
 router = APIRouter()
 
@@ -16,6 +15,7 @@ async def create_transporter(
     answer: EndpointAnswer = await transporters.create_transporter(transporter)
 
     return answer
+
 
 @router.get("/", response_model=EndpointAnswer, status_code=status.HTTP_200_OK)
 async def get_transporters(
