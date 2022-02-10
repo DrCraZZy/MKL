@@ -2,7 +2,7 @@ from datetime import datetime
 
 from project.app.helper.message_parser import parse_message
 from project.app.repositories.base_repository import BaseRepository
-from project.app.schema.transporter import TransporterSchema
+from project.app.schema.transporter import TransporterSchema, TransporterOutSchema
 from project.app.db.tables.transporter import transporter_data
 from project.app.helper.log import logger
 from project.app.helper.endpoint_answer import EndpointAnswer
@@ -42,7 +42,8 @@ class TransporterRepository(BaseRepository):
                     logger.info(message)
                 else:
                     message: str = f"New transporter with inn:'{transporter.inn}' was created."
-                    result = EndpointAnswer(status="success", message=message, result=new_transporter)
+                    result = EndpointAnswer(status="success", message=message,
+                                            result=TransporterOutSchema.parse_obj(new_transporter))
                     logger.info(message)
             except Exception as e:
                 message: str = parse_message(str(e))
@@ -135,8 +136,8 @@ class TransporterRepository(BaseRepository):
             )
 
             values = {**updated_transporter.dict()}
-            values.pop("created_at")
-            values.pop("inn")
+            values.pop("created_at", None)
+            values.pop("inn", None)
             query = transporter_data.update().where(transporter_data.c.inn == transporter_inn).values(**values)
 
             try:
