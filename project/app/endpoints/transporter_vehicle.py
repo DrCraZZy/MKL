@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status
 
-from .depends import get_transporter_vehicle_repository
-from project.app.schema.transporter_vehicle import TransporterVehicleInSchema
-from project.app.repositories.transporter_vehicle import TransporterVehicleRepository
 from project.app.helper.endpoint_answer import EndpointAnswer
-from project.app.helper.message_parser import parse_message
+from project.app.repositories.transporter_vehicle import TransporterVehicleRepository
+from project.app.schema.transporter_vehicle import TransporterVehicleInSchema
+from .depends import get_transporter_vehicle_repository
 
 router = APIRouter()
 
@@ -14,11 +13,6 @@ async def create_transporter_vehicle(
         vehicle: TransporterVehicleInSchema,
         vehicles: TransporterVehicleRepository = Depends(get_transporter_vehicle_repository)):
     answer: EndpointAnswer = await vehicles.create_transporter_vehicle(vehicle)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -29,11 +23,6 @@ async def get_all_vehicle(
         skip: int = 0,
         vehicles: TransporterVehicleRepository = Depends(get_transporter_vehicle_repository)):
     answer: EndpointAnswer = await vehicles.get_all_vehicles(limit=limit, skip=skip)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -46,11 +35,6 @@ async def get_transporter_vehicles_by_inn(
         vehicles: TransporterVehicleRepository = Depends(get_transporter_vehicle_repository)):
     answer: EndpointAnswer = await vehicles.get_transporter_vehicles_by_inn(customer_inn=customer_inn, limit=limit,
                                                                             skip=skip)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -63,11 +47,6 @@ async def update_vehicle(
         vehicles: TransporterVehicleRepository = Depends(get_transporter_vehicle_repository)):
     answer: EndpointAnswer = await vehicles.update_vehicle_by_id_by_inn(vehicle_id=vehicle_id,
                                                                         customer_inn=customer_inn, vehicle=vehicle)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -77,10 +56,5 @@ async def delete_vehicle_by_id(
         vehicle_id: int,
         vehicles: TransporterVehicleRepository = Depends(get_transporter_vehicle_repository)):
     answer: EndpointAnswer = await vehicles.delete_vehicle_by_id(vehicle_id=vehicle_id)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer

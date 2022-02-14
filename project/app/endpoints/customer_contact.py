@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
-from .depends import get_customer_contact_repository
-from project.app.schema.customer_contact import CustomerContactInSchema
-from project.app.repositories.customer_contact import CustomerContactRepository
 from project.app.helper.endpoint_answer import EndpointAnswer
-from project.app.helper.message_parser import parse_message
+from project.app.repositories.customer_contact import CustomerContactRepository
+from project.app.schema.customer_contact import CustomerContactInSchema
+from .depends import get_customer_contact_repository
 
 router = APIRouter()
 
@@ -15,12 +14,6 @@ async def get_customer_contacts(
         contacts: CustomerContactRepository = Depends(get_customer_contact_repository)):
     answer: EndpointAnswer = await contacts.get_customer_contacts_by_inn(customer_inn=customer_inn)
 
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
-
     return answer
 
 
@@ -29,12 +22,6 @@ async def create_customer_contact(
         contact: CustomerContactInSchema,
         contacts: CustomerContactRepository = Depends(get_customer_contact_repository)):
     answer: EndpointAnswer = await contacts.create_customer_contact(contact=contact)
-
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -48,12 +35,6 @@ async def update_customer_contact(
     answer: EndpointAnswer = await contacts.update_contact(contact_id=contact_id, customer_inn=customer_inn,
                                                            contact=contact)
 
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
-
     return answer
 
 
@@ -62,11 +43,5 @@ async def delete_customer_contact_by_id(
         contact_id: int,
         contacts: CustomerContactRepository = Depends(get_customer_contact_repository)):
     answer: EndpointAnswer = await contacts.delete_customer_contact_by_id(contact_id=contact_id)
-
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer

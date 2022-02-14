@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status
 
-from .depends import get_customer_order_repository
-from project.app.schema.customer_order import CustomerOrderInSchema, CustomerOrderUpdateSchema
-from project.app.repositories.customer_order import CustomerOrderRepository
-from project.app.helper.message_parser import parse_message
 from project.app.helper.endpoint_answer import EndpointAnswer
+from project.app.repositories.customer_order import CustomerOrderRepository
+from project.app.schema.customer_order import CustomerOrderInSchema, CustomerOrderUpdateSchema
+from .depends import get_customer_order_repository
 
 router = APIRouter()
 
@@ -14,11 +13,6 @@ async def create_customer_order(
         order: CustomerOrderInSchema,
         orders: CustomerOrderRepository = Depends(get_customer_order_repository)):
     answer: EndpointAnswer = await orders.create_customer_order(order)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -29,11 +23,6 @@ async def get_all_order(
         skip: int = 0,
         orders: CustomerOrderRepository = Depends(get_customer_order_repository)):
     answer: EndpointAnswer = await orders.get_all_orders(limit=limit, skip=skip)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -45,11 +34,6 @@ async def get_customer_orders_by_inn(
         skip: int = 0,
         orders: CustomerOrderRepository = Depends(get_customer_order_repository)):
     answer: EndpointAnswer = await orders.get_customer_orders(customer_inn=customer_inn, limit=limit, skip=skip)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -62,11 +46,6 @@ async def update_order(
         orders: CustomerOrderRepository = Depends(get_customer_order_repository)):
     answer: EndpointAnswer = await orders.update_order_by_id_by_inn(order_id=order_id, customer_inn=customer_inn,
                                                                     order=order)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
 
@@ -76,10 +55,5 @@ async def delete_customer_by_inn(
         order_id: int,
         orders: CustomerOrderRepository = Depends(get_customer_order_repository)):
     answer: EndpointAnswer = await orders.delete_order_by_id(order_id=order_id)
-    if answer.status != "success":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=parse_message(answer.message)
-        )
 
     return answer
