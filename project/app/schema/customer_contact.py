@@ -16,4 +16,3 @@ class CustomerContactOutSchema(CustomerContactInSchema):
     id: int
     created_at: datetime = datetime.utcnow()
     updated_at: datetime = datetime.utcnow()
-

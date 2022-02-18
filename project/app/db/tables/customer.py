@@ -15,6 +15,7 @@ customer_data = Table(
     Column("legal_address", String, nullable=False),
     Column("address", String),
     Column("email", String, nullable=False),
+
     Column("telephone", String),
     Column("payment_account", String, nullable=False),
     Column("corporate_account", String, nullable=False),
